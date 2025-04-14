@@ -10,7 +10,7 @@ const Etat = require("../models/etats");
 const User = require("../models/users");
 
 //Route pour publier un nouvel article
-
+//
 router.post("/publish", async (req, res) => {
   const foundCategory = await Categorie.findOne({ name: req.body.categorie });
   const foundEtat = await Etat.findOne({ condition: req.body.etat });
