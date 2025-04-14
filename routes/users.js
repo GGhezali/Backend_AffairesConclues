@@ -34,7 +34,9 @@ router.post("/sign-up", (req, res) => {
 
 // rout POST Quand l'utilisateur clique sur "se connecter", il envoie ses infos ici
 router.post("/sign-in", (req, res) => {
-  User.findOne({ email:req.body.email }).then((data) => {
+  // Route POST appelée quand l'utilisateur se connecte
+  User.findOne({ email: req.body.email }).then((data) => {
+    console.log(data)
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
       // Si l'utilisateur existe et que le mot de passe est correct (comparé au hash)
       res.json({ result: true });
@@ -44,6 +46,9 @@ router.post("/sign-in", (req, res) => {
   });
 });
 
-
+/* GET users listing. */
+router.get("/", function (req, res, next) {
+  res.send("respond with a resource");
+});
 
 module.exports = router;
