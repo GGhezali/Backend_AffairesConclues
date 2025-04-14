@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 var express = require("express"); // On importe express pour créer une route
 var router = express.Router(); // On crée un objet routeur express
 
@@ -47,9 +46,5 @@ router.post("/publish", async (req, res) => {
     res.json({ result: true, data }); 
   });
 });
-=======
-var express = require("express");
-var router = express.Router();
->>>>>>> 97b696101b77d0e7c49d0f783de8ce3043341868
 
 module.exports = router;
