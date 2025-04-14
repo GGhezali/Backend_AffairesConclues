@@ -2,12 +2,22 @@ var express = require("express"); // On importe express pour créer une route
 var router = express.Router(); // On crée un objet routeur express
 
 const Article = require("../models/articles");
-const Auteur = require("../models/auteurs")
+const Auteur = require("../models/auteurs");
+const Categorie = require("../models/categories");
 
 router.post("/publish", (req, res) => {
-  newArticle = new Article({
+
+    let categorie;
+    Categorie.findOne({name: req.body.categorie})
+        .then(data => {
+            
+        })
+
+console.log(categorie)
+
+  const newArticle = new Article({
     titre: req.body.titre,
-    // categorie: { type: mongoose.Schema.Types.ObjectId, ref: "categories" },
+    categorie: categorie,
     // etat: { type: mongoose.Schema.Types.ObjectId, ref: "etats" },
     description: req.body.discription,
     // auteur: { type: mongoose.Schema.Types.ObjectId, ref: "auteurs" },
