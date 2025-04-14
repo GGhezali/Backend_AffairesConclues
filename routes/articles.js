@@ -37,7 +37,7 @@ router.post("/publish", async (req, res) => {
     annonceur: foundAnonceur._id,
     acheteur: foundAcheteur._id,
     timer: req.body.timer,
-    isSold: req.body.isSold,
+    isDone: req.body.isDone,
   });
 
   // On sauvegarde l'article' dans la base de données
