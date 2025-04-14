@@ -18,7 +18,6 @@ const newUser = new User({
 
 newUser.save().then(() => {
   // On sauvegarde le nouvel utilisateur dans la base de données
-  // On sauvegarde le nouvel utilisateur dans la base de données
   res.json({ result: true, token: token }); // On renvoie un succès et le token au frontend
 });
 
