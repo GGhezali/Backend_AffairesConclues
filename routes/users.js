@@ -23,7 +23,7 @@ router.post("/sign-up", (req, res) => {
 
 router.post("/sign-in", (req, res) => {
   // Route POST appelée quand l'utilisateur se connecte
-  User.findOne({ username: req.body.username, email: req.body.email }).then((data) => {
+  User.findOne({ email: req.body.email }).then((data) => {
     console.log(data)
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
       // Si l'utilisateur existe et que le mot de passe est correct (comparé au hash)
