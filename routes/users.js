@@ -55,14 +55,11 @@ if(!emailRegex.test(req.body.email)) {
 
   // Route POST appelée quand l'utilisateur se connecte
   User.findOne({ email: req.body.email}).then((data) => {
-    console.log(data)
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
       // Si l'utilisateur existe et que le mot de passe est correct (comparé au hash)
-      console.log('true')
-      res.json({ result: true });
+      res.json({ result: true, token: data.token });
     } else {
       res.json({ result: false }); // Sinon on dit que la connexion a échoué
-      console.log('false')
     }
   });
 });
