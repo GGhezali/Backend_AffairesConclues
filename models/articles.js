@@ -16,7 +16,7 @@ const articleSchema = mongoose.Schema({
   startPrice: Number,
   currentPrice: Number,
   localisation: localisationSchema,
-  photoUrl: String,
+  photoUrl: [String],
   annonceur: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
   acheteur: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
   timer: Date,

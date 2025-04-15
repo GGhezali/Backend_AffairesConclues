@@ -9,6 +9,24 @@ const Categorie = require("../models/categories");
 const Etat = require("../models/etats");
 const User = require("../models/users");
 
+//Route pour récupérer les articles
+
+router.get("/", (req, res) => {
+  Article.find().then((data) => {
+    res.json({ success: true, data });
+  });
+});
+
+// Route pour updater la propriété isDone d'un article pour lequel la vente est terminées
+
+router.post("/updateIsDone", (req, res) => {
+  const id = req.body.id;
+
+  Article.updateOne({ _id: id }, { isDone: true }).then(() => {
+    Article.find().then((data) => console.log(data));
+  });
+});
+
 //Route pour publier un nouvel article
 //
 router.post("/publish", async (req, res) => {
