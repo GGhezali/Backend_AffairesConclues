@@ -14,6 +14,9 @@ router.post("/sign-up", (req, res) => {
   // On vérifie si l'email est valide
 
   if (!emailRegex.test(req.body.email)) {
+    return res.json({ result: false, error: "Email invalide" });
+  }
+  if (!emailRegex.test(req.body.email)) {
     return res.json({ result: false, message: "Email invalide" });
   }
 
@@ -44,6 +47,13 @@ router.post("/sign-up", (req, res) => {
 
 // rout POST Quand l'utilisateur clique sur "se connecter", il envoie ses infos ici
 router.post("/sign-in", (req, res) => {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  // On vérifie si l'email est valide
+
+  if (!emailRegex.test(req.body.email)) {
+    return res.json({ result: false, error: "Email invalide" });
+  }
+
   // Route POST appelée quand l'utilisateur se connecte
   User.findOne({ email: req.body.email }).then((data) => {
     console.log(data);
