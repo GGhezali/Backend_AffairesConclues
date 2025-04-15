@@ -9,21 +9,22 @@ const bcrypt = require("bcrypt");
 // On importe notre modèle/schema d'utilisateur
 const User = require("../models/users");
 
-
-
 router.post("/sign-up", (req, res) => {
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
   // On vérifie si l'email est valide
 
-if(!emailRegex.test(req.body.email)) {
-  return res.json({ result: false, error: "Email invalide" })
-};
+  if (!emailRegex.test(req.body.email)) {
+    return res.json({ result: false, error: "Email invalide" });
+  }
+  if (!emailRegex.test(req.body.email)) {
+    return res.json({ result: false, message: "Email invalide" });
+  }
 
   User.findOne({ email: req.body.email }).then((data) => {
-  if (data) {
-    return res.json({ result: false, error: "Utilisateur déjà existant" });
-  }
-  })
+    if (data) {
+      return res.json({ result: false, error: "Utilisateur déjà existant" });
+    }
+  });
   const hash = bcrypt.hashSync(req.body.password, 10);
   // token de 32 caractères aléatoire
   const token = uid2(32);
@@ -49,9 +50,9 @@ router.post("/sign-in", (req, res) => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   // On vérifie si l'email est valide
 
-if(!emailRegex.test(req.body.email)) {
-  return res.json({ result: false, error: "Email invalide" })
-};
+  if (!emailRegex.test(req.body.email)) {
+    return res.json({ result: false, error: "Email invalide" });
+  }
 
   // Route POST appelée quand l'utilisateur se connecte
   User.findOne({ email: req.body.email}).then((data) => {
@@ -63,7 +64,5 @@ if(!emailRegex.test(req.body.email)) {
     }
   });
 });
-
-
 
 module.exports = router;
