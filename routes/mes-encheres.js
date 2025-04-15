@@ -1,0 +1,27 @@
+express = require("express"); // On importe express pour créer une route
+var router = express.Router(); // On crée un objet routeur express
+const Articles = require("../models/articles"); // recuperer le models
+
+// Renvoie les articles que l'utilisateur a achetés mais dont la vente n'est pas terminée
+router.get("/open/:userId", (req, res) => {
+  Articles.find({ acheteur: req.params.userId, isDone: false })
+    .then((articles) => {
+      res.json({ result: true, articles });
+    })
+    .catch(() => {
+      res.json({ result: false, error: "Erreur serveur." });
+    });
+});
+
+// Renvoie les articles achetés et dont la vente est terminée
+router.get("/closed/:userId", (req, res) => {
+  Articles.find({ acheteur: req.params.userId, isDone: true })
+    .then((articles) => {
+      res.json({ result: true, articles });
+    })
+    .catch(() => {
+      res.json({ result: false, error: "Erreur serveur." });
+    });
+});
+
+module.exports = router;
