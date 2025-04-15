@@ -12,7 +12,14 @@ const User = require("../models/users");
 //Route pour récupérer les articles
 
 router.get("/", (req, res) => {
-  Article.find().then((data) => {
+  Article.find()
+  .populate("categorie")
+  .populate("etat")
+  .populate("auteur")
+  .populate("editeur")
+  .populate("annonceur")
+  .populate("acheteur")
+  .then((data) => {
     res.json({ success: true, data });
   });
 });
