@@ -9,8 +9,21 @@ const bcrypt = require("bcrypt");
 // On importe notre modèle/schema d'utilisateur
 const User = require("../models/users");
 
+
+
 router.post("/sign-up", (req, res) => {
-  
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  // On vérifie si l'email est valide
+
+if(!emailRegex.test(req.body.email)) {
+  return res.json({ result: false, message: "Email invalide" })
+};
+
+  User.findOne({ email: req.body.email }).then((data) => {
+  if (data) {
+    return res.json({ result: false, error: "Utilisateur déjà existant" });
+  }
+  })
   const hash = bcrypt.hashSync(req.body.password, 10);
   // token de 32 caractères aléatoire
   const token = uid2(32);
