@@ -23,7 +23,7 @@ router.post("/updateIsDone", (req, res) => {
   const id = req.body.id;
 
   Article.updateOne({ _id: id }, { isDone: true }).then(() => {
-    Article.find().then((data) => console.log(data));
+    Article.findOne({ _id: id }).then((data) => res.json({data}));
   });
 });
 
