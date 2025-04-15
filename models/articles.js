@@ -6,7 +6,6 @@ const localisationSchema = mongoose.Schema({
   latitude: Number,
 });
 
-
 const articleSchema = mongoose.Schema({
   titre: String,
   categorie: { type: mongoose.Schema.Types.ObjectId, ref: "categories" },

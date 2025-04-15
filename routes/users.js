@@ -9,7 +9,21 @@ const bcrypt = require("bcrypt");
 // On importe notre modèle/schema d'utilisateur
 const User = require("../models/users");
 
+
+
 router.post("/sign-up", (req, res) => {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  // On vérifie si l'email est valide
+
+if(!emailRegex.test(req.body.email)) {
+  return res.json({ result: false, message: "Email invalide" })
+};
+
+  User.findOne({ email: req.body.email }).then((data) => {
+  if (data) {
+    return res.json({ result: false, error: "Utilisateur déjà existant" });
+  }
+  })
   const hash = bcrypt.hashSync(req.body.password, 10);
   // token de 32 caractères aléatoire
   const token = uid2(32);
@@ -33,7 +47,7 @@ router.post("/sign-up", (req, res) => {
 // rout POST Quand l'utilisateur clique sur "se connecter", il envoie ses infos ici
 router.post("/sign-in", (req, res) => {
   // Route POST appelée quand l'utilisateur se connecte
-  User.findOne({ email: req.body.email, password:req.body.password }).then((data) => {
+  User.findOne({ email: req.body.email}).then((data) => {
     console.log(data)
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
       // Si l'utilisateur existe et que le mot de passe est correct (comparé au hash)
