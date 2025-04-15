@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const auteurSchema = mongoose.Schema({
-  name: String,
+  auteur: String,
 });
 
 const Auteur = mongoose.model("auteurs", auteurSchema);

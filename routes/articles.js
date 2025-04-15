@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+var express = require('express');
+var router = express.Router();
+
+module.exports = router;
+=======
 var express = require("express"); // On importe express pour créer une route
 var router = express.Router(); // On crée un objet routeur express
 
@@ -28,7 +34,7 @@ router.post("/updateIsDone", (req, res) => {
 });
 
 //Route pour publier un nouvel article
-
+//
 router.post("/publish", async (req, res) => {
   const foundCategory = await Categorie.findOne({ name: req.body.categorie });
   const foundEtat = await Etat.findOne({ condition: req.body.etat });
@@ -66,3 +72,4 @@ router.post("/publish", async (req, res) => {
 });
 
 module.exports = router;
+>>>>>>> a219a6932ca859f054859e887c365db673175ade

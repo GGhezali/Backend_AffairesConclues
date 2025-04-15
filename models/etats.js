@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const etatSchema = mongoose.Schema({
-condition: String,
+etat: String,
 });
 
 const Etat = mongoose.model('etats', etatSchema);

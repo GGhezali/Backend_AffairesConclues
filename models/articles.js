@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 const localisationSchema = mongoose.Schema({
+  adresse: String,
+  longitude: Number,
+  latitude: Number,
+});
   adresse: String,
   longitude: Number,
   latitude: Number,
@@ -23,6 +28,7 @@ const articleSchema = mongoose.Schema({
   isDone: Boolean,
 });
 
+const Article = mongoose.model("articles", articleSchema);
 const Article = mongoose.model("articles", articleSchema);
 
 module.exports = Article;
