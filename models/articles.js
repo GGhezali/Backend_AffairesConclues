@@ -20,7 +20,7 @@ const articleSchema = mongoose.Schema({
   annonceur: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
   acheteur: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
   timer: Date,
-  isSold: Boolean,
+  isDone: Boolean,
 });
 
 const Article = mongoose.model("articles", articleSchema);
