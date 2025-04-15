@@ -9,12 +9,53 @@ const bcrypt = require("bcrypt");
 // On importe notre modèle d'utilisateur
 const User = require("../models/users");
 
+
+
 // Route POST pour s'inscrire
 router.post("/sign-up", (req, res) => {
-  // On vérifie si l'email est déjà utilisé
-  User.findOne({ email: req.body.email }).then((userWithEmail) => {
-    if (userWithEmail) {
-      res.json({ result: false, error: "Email déjà utilisé." });
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  // On vérifie si l'email est valide
+
+  if (!emailRegex.test(req.body.email)) {
+    return res.json({ result: false, message: "Email invalide" });
+  }
+
+  User.findOne({ email: req.body.email }).then((data) => {
+    if (data) {
+      return res.json({ result: false, error: "Utilisateur déjà existant" });
+    }
+  });
+  const hash = bcrypt.hashSync(req.body.password, 10);
+  // token de 32 caractères aléatoire
+  const token = uid2(32);
+
+          // On crée le nouvel utilisateur
+          const newUser = new User({
+            username: req.body.username,
+            email: req.body.email,
+            password: hash,
+            token: token,
+          });
+
+          // On enregistre le nouvel utilisateur dans la base de données
+          newUser.save().then(() => {
+            res.json({ result: true, token: token });
+          });
+        }
+      });
+    }
+  });
+});
+
+// rout POST Quand l'utilisateur clique sur "se connecter", il envoie ses infos ici
+router.post("/sign-in", (req, res) => {
+  // Route POST appelée quand l'utilisateur se connecte
+  User.findOne({ email: req.body.email }).then((data) => {
+    console.log(data);
+    if (data && bcrypt.compareSync(req.body.password, data.password)) {
+      // Si l'utilisateur existe et que le mot de passe est correct (comparé au hash)
+      console.log("true");
+      res.json({ result: true });
     } else {
       // On vérifie si le nom d'utilisateur est déjà pris
       User.findOne({ username: req.body.username }).then((userWithUsername) => {
