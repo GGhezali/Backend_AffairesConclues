@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-var express = require('express');
-var router = express.Router();
-
-module.exports = router;
-=======
 var express = require("express"); // On importe express pour créer une route
 var router = express.Router(); // On crée un objet routeur express
 
@@ -29,7 +23,7 @@ router.post("/updateIsDone", (req, res) => {
   const id = req.body.id;
 
   Article.updateOne({ _id: id }, { isDone: true }).then(() => {
-    Article.find().then((data) => console.log(data));
+    Article.findOne({ _id: id }).then((data) => res.json({data}));
   });
 });
 
@@ -72,4 +66,3 @@ router.post("/publish", async (req, res) => {
 });
 
 module.exports = router;
->>>>>>> a219a6932ca859f054859e887c365db673175ade
