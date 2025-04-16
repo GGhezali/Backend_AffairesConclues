@@ -52,7 +52,7 @@ if (foundCategory, foundEtat, foundAuteur, foundEditeur, foundAnonceur, foundAch
     titre: req.body.titre,
     categorie: foundCategory._id,
     etat: foundEtat._id,
-    description: req.body.discription,
+    description: req.body.description,
     auteur: foundAuteur._id,
     editeur: foundEditeur._id,
     startPrice: req.body.startPrice,
