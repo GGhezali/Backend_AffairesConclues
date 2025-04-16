@@ -7,7 +7,7 @@ const Categorie = require("../models/categories"); // On importe le modèle de l
 router.get("/", async (req, res) => {
   try {
     const categories = await Categorie.find(); // On cherche toutes les catégories dans la BDD
-    res.json(categories); // On renvoie les catégories au frontend
+    res.json({categories: categories}); // On renvoie les catégories au frontend
   } catch (error) {
     res.status(500).json({ message: "Erreur lors de la récupération des catégories" }); // En cas d'erreur, on renvoie un message d'erreur
   }

@@ -7,7 +7,7 @@ const Etat = require("../models/etats"); // On importe le modèle de la BDD pour
 router.get("/", async (req, res) => {
   try {
     const etats = await Etat.find(); // On cherche toutes les catégories dans la BDD
-    res.json(etats); // On renvoie les catégories au frontend
+    res.json({etats: etats}); // On renvoie les catégories au frontend
   } catch (error) {
     res.status(500).json({ message: "Erreur lors de la récupération des catégories" }); // En cas d'erreur, on renvoie un message d'erreur
   }
