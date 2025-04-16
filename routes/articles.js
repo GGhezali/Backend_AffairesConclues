@@ -13,6 +13,7 @@ const User = require("../models/users");
 
 router.get("/", (req, res) => {
   Article.find()
+  //Populate sur les champs clé étrangères pour récupérer l'info textuelle et non l'id
   .populate("categorie")
   .populate("etat")
   .populate("auteur")
@@ -35,8 +36,8 @@ router.post("/updateIsDone", (req, res) => {
 });
 
 //Route pour publier un nouvel article
-//
 router.post("/publish", async (req, res) => {
+  //On "fetch" dans les BDD préremplies pour récupérer les id des champs
   const foundCategory = await Categorie.findOne({ name: req.body.categorie });
   const foundEtat = await Etat.findOne({ condition: req.body.etat });
   const foundAuteur = await Auteur.findOne({ name: req.body.auteur });
@@ -44,6 +45,9 @@ router.post("/publish", async (req, res) => {
   const foundAnonceur = await User.findOne({ username: req.body.annonceur });
   const foundAcheteur = await User.findOne({ username: req.body.acheteur });
 
+  //On check que tous les champs sont remplis avant de créer l'article
+if (foundCategory, foundEtat, foundAuteur, foundEditeur, foundAnonceur, foundAcheteur) {
+  //On construit le nouvel article en fonction des champs remplis par l'utilisateur
   const newArticle = new Article({
     titre: req.body.titre,
     categorie: foundCategory._id,
@@ -64,12 +68,17 @@ router.post("/publish", async (req, res) => {
     timer: req.body.timer,
     isDone: req.body.isDone,
   });
-
+  
   // On sauvegarde l'article' dans la base de données
   newArticle.save().then((data) => {
     // On renvoie un succès et on affiche l'article poster dans le backend
     res.json({ result: true, data });
   });
+  //Si tout n'est pas rempli, on renvoie un message d'erreur
+} else {
+  res.json({ result: false, message: "Missing fields" });
+}
+
 });
 
 module.exports = router;
