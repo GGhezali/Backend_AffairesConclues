@@ -11,14 +11,21 @@ const User = require("../models/users");
 
 router.post("/sign-up", (req, res) => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
-  // On vérifie si l'email est valide
 
+  // On vérifie si l'email est valide
   if (!emailRegex.test(req.body.email)) {
     return res.json({ result: false, error: "Email invalide" });
   }
   if (!emailRegex.test(req.body.email)) {
-    return res.json({ result: false, message: "Email invalide" });
+    return res.json({ result: false, error: "Email invalide" });
   }
+
+  if (req.body.password.length < 8)
+    return res.json({ result: false, error: "Min. 8 caractères" });
+  if (!/[A-Z]/.test(req.body.password))
+    return res.json({ result: false, error: "Majuscule requise" });
+  if (!/\d/.test(req.body.password))
+    return res.json({ result: false, error: "Chiffre requis" });
 
   User.findOne({ email: req.body.email }).then((data) => {
     if (data) {
@@ -55,7 +62,7 @@ router.post("/sign-in", (req, res) => {
   }
 
   // Route POST appelée quand l'utilisateur se connecte
-  User.findOne({ email: req.body.email}).then((data) => {
+  User.findOne({ email: req.body.email }).then((data) => {
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
       // Si l'utilisateur existe et que le mot de passe est correct (comparé au hash)
       res.json({ result: true, token: data.token });
