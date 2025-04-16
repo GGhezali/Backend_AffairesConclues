@@ -11,6 +11,7 @@ var usersRouter = require("./routes/users");
 var articlesRouter = require("./routes/articles");
 var categoriesRouter = require("./routes/categories");
 var mesEncheresRouter = require("./routes/mes-encheres");
+var etatsRouter = require("./routes/etats");
 
 var app = express();
 const cors = require("cors");
@@ -27,5 +28,6 @@ app.use("/users", usersRouter);
 app.use("/articles", articlesRouter);
 app.use("/categories", categoriesRouter);
 app.use("/mes-encheres", mesEncheresRouter);
+app.use("/etats", etatsRouter);
 
 module.exports = app;
