@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const editeurSchema = mongoose.Schema({
-    editeur: String,
+  name: String,
 });
 
 const Editeur = mongoose.model("editeurs", editeurSchema);
