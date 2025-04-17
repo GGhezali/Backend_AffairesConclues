@@ -14,12 +14,7 @@ const User = require("../models/users");
 router.get("/", (req, res) => {
   Article.find()
     //Populate sur les champs clé étrangères pour récupérer l'info textuelle et non l'id
-    .populate("categorie")
-    .populate("etat")
-    .populate("auteur")
-    .populate("editeur")
-    .populate("annonceur")
-    .populate("acheteur")
+    .populate("categorie etat auteur editeur annonceur acheteur")
     .then((data) => {
       res.json({ success: true, data });
     });
@@ -85,31 +80,58 @@ router.post('/searchByCategorie', (req, res) => {
   try {
     const { categorie, tri } = req.body; // On récupère la catégorie envoyée par le frontend
 
-    if (categorie && !tri) { // Si la catégorie est définie et qu'il n'y a pas de tri
+    if (categorie !== '--All Categories--' && !tri) { // Si la catégorie est définie et qu'il n'y a pas de tri
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
-
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
+            .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               res.json({ success: true, data }); // On renvoie les articles trouvés
             })
         });
-    } else if (categorie && tri === 'Le plus récent') { // Si la catégorie et le tri sont définis
+    } else if (categorie !== '--All Categories--' && tri === 'Le plus récent') { // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
-
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
             .then((data) => {
               data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
               res.json({ success: true, data }); // On renvoie les articles trouvés
             })
         });
-    } else if (categorie && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
+    } else if (categorie !== '--All Categories--' && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
+            .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
-              data = data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
+              data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
+              res.json({ success: true, data }); // On renvoie les articles trouvés
+            })
+        });
+    } else if (categorie === '--All Categories--' && !tri) {
+      Article.find() // On cherche les articles qui correspondent à la catégorie
+        .populate("categorie etat auteur editeur annonceur acheteur")
+        .then((data) => {
+          res.json({ success: true, data }); // On renvoie les articles trouvés
+
+        });
+    } else if (categorie === '--All Categories--' && tri === 'Le plus récent') { // Si la catégorie et le tri sont définis
+      Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
+        .then(() => {
+          Article.find() // On cherche les articles qui correspondent à la catégorie
+            .populate("categorie etat auteur editeur annonceur acheteur")
+            .then((data) => {
+              data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
+              res.json({ success: true, data }); // On renvoie les articles trouvés
+            })
+        });
+    } else if (categorie === '--All Categories--' && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
+      Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
+        .then(() => {
+          Article.find() // On cherche les articles qui correspondent à la catégorie
+            .populate("categorie etat auteur editeur annonceur acheteur")
+            .then((data) => {
+              data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
               res.json({ success: true, data }); // On renvoie les articles trouvés
             })
         });
@@ -124,20 +146,18 @@ router.post('/searchByTri', (req, res) => {
     const { categorie, tri } = req.body; // On récupère la catégorie envoyée par le frontend
 
     if (!categorie && tri === 'Le plus récent') { // Si la catégorie est définie et qu'il n'y a pas de tri
-      Article.find() 
+      Article.find()
         .then((data) => {
           data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
           res.json({ success: true, data }); // On renvoie les articles trouvés
         });
-
     } else if (!categorie && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
       Article.find()
         .then((data) => {
-          data = data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
+          data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
           res.json({ success: true, data }); // On renvoie les articles trouvés
-        })
-
-    } else if (categorie && tri === 'Le plus récent') { // Si la catégorie et le tri sont définis
+        });
+    } else if (categorie !== '--All Categories--' && tri === 'Le plus récent') { // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
@@ -146,12 +166,30 @@ router.post('/searchByTri', (req, res) => {
               res.json({ success: true, data }); // On renvoie les articles trouvés
             })
         });
-    } else if (categorie && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
+    } else if (categorie !== '--All Categories--' && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
             .then((data) => {
-              data = data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
+              data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
+              res.json({ success: true, data }); // On renvoie les articles trouvés
+            })
+        });
+    } else if (categorie === '--All Categories--' && tri === 'Le plus récent') { // Si la catégorie et le tri sont définis
+      Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
+        .then(() => {
+          Article.find() // On cherche les articles qui correspondent à la catégorie
+            .then((data) => {
+              data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
+              res.json({ success: true, data }); // On renvoie les articles trouvés
+            })
+        });
+    } else if (categorie === '--All Categories--' && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
+      Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
+        .then(() => {
+          Article.find() // On cherche les articles qui correspondent à la catégorie
+            .then((data) => {
+              data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
               res.json({ success: true, data }); // On renvoie les articles trouvés
             })
         });
