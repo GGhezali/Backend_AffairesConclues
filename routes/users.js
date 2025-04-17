@@ -150,6 +150,8 @@ router.put("/updateInfo/:email", (req, res) => {
           email: req.body.email,
           username: req.body.username,
           telephone: req.body.telephone,
+         donneeBancaire: req.body.donneeBancaire,
+          // password: req.body.password, // on ne met pas à jour le mot de passe ici
         },
         { new: true } // pour récupérer la version mise à jour
       );
