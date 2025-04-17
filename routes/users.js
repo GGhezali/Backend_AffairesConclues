@@ -22,19 +22,31 @@ router.post("/sign-up", (req, res) => {
 
   // On verifie si le mot de passe contient au moin 8 CARACTERES
   if (req.body.password.length < 8)
-    return res.json({ result: false, error: "Le mot de passe doit avoir au moins 8 caractères." });
+    return res.json({
+      result: false,
+      error: "Le mot de passe doit avoir au moins 8 caractères.",
+    });
 
   // On vérifie si le mot de passe contient au moins une minuscule
   if (!/[A-Z]/.test(req.body.password))
-    return res.json({ result: false, error: "Le mot de passe doit contenir au moins une majuscule." });
-  
+    return res.json({
+      result: false,
+      error: "Le mot de passe doit contenir au moins une majuscule.",
+    });
+
   // On vérifie si le mot de passe contient au moins un chiffre
   if (!/\d/.test(req.body.password))
-  return res.json({ result: false, error: "Le mot de passe doit contenir au moins un chiffre." });
+    return res.json({
+      result: false,
+      error: "Le mot de passe doit contenir au moins un chiffre.",
+    });
 
- // On vérifie si le mot de passe contient au moins un caractère spécial
+  // On vérifie si le mot de passe contient au moins un caractère spécial
   if (!/[^a-zA-Z0-9]/.test(req.body.password))
-  return res.json({ result: false, error: "Le mot de passe doit contenir au moins un caractère spécial." });
+    return res.json({
+      result: false,
+      error: "Le mot de passe doit contenir au moins un caractère spécial.",
+    });
 
   User.findOne({ email: req.body.email }).then((data) => {
     if (data) {
@@ -79,6 +91,17 @@ router.post("/sign-in", (req, res) => {
       res.json({ result: false }); // Sinon on dit que la connexion a échoué
     }
   });
+});
+
+router.post("/findUserIdByToken", (req, res) => {
+  const { token } = req.body;
+  User.findOne({ token: token })
+    .then((data) => {
+      res.json({ result: true, userId: data._id });
+    })
+    .catch(() => {
+      res.json({ result: false, error: "Erreur serveur." });
+    });
 });
 
 module.exports = router;
