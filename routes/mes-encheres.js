@@ -5,6 +5,7 @@ const Articles = require("../models/articles"); // recuperer le models
 // Renvoie les articles que l'utilisateur a achetés mais dont la vente n'est pas terminée
 router.get("/open/:userId", (req, res) => {
   Articles.find({ acheteur: req.params.userId, isDone: false })
+  .populate("categorie etat auteur editeur annonceur acheteur")
     .then((articles) => {
       res.json({ result: true, articles });
     })
@@ -16,6 +17,7 @@ router.get("/open/:userId", (req, res) => {
 // Renvoie les articles achetés et dont la vente est terminée
 router.get("/closed/:userId", (req, res) => {
   Articles.find({ acheteur: req.params.userId, isDone: true })
+  .populate("categorie etat auteur editeur annonceur acheteur")
     .then((articles) => {
       res.json({ result: true, articles });
     })
