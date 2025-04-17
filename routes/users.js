@@ -104,4 +104,15 @@ router.post("/findUserIdByToken", (req, res) => {
     });
 });
 
+router.post("/findUserByToken", (req, res) => {
+  const { token } = req.body;
+  User.findOne({ token: token })
+    .then((data) => {
+      res.json({ result: true, data });
+    })
+    .catch(() => {
+      res.json({ result: false, error: "Erreur serveur." });
+    });
+});
+
 module.exports = router;
