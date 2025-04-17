@@ -1,14 +1,13 @@
 const mongoose = require('mongoose')
 
 const userSchema = mongoose.Schema({
-    email:String,
-    username:String,
-    token:String,
-    password:String,
-   donneeBancaire:String,
-   telephone:Number,
-   //👇 Clé etrangere pour connection avec collection articles . 
-   bookmark:[{ type: mongoose.Schema.Types.ObjectId, ref: 'articles' }],   
+    email: { type: String, required: true },
+    username: { type: String, required: true },
+    token: { type: String, required: true },
+    password: { type: String, required: true },
+    donneeBancaire: { type: String, default: null },
+    telephone: { type: Number, default: null },
+    bookmark: [{ type: mongoose.Schema.Types.ObjectId, ref: 'articles', default: [] }]   
 })
 
 const User = mongoose.model('users', userSchema)

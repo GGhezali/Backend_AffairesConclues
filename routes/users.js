@@ -66,6 +66,12 @@ router.post("/sign-up", (req, res) => {
     password: hash,
     //on enregistre le token
     token: uid2(32),
+    
+    donneeBancaire: null,
+
+    telephone: null,
+
+    bookmark: [],
   });
   // On sauvegarde le nouvel utilisateur dans la base de données
   newUser.save().then(() => {
