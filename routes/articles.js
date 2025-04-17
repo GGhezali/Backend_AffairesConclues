@@ -16,6 +16,7 @@ router.get("/", (req, res) => {
     //Populate sur les champs clé étrangères pour récupérer l'info textuelle et non l'id
     .populate("categorie etat auteur editeur annonceur acheteur")
     .then((data) => {
+      data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles du plus récent au plus ancien
       res.json({ success: true, data });
     });
 });
