@@ -93,6 +93,7 @@ router.post('/searchByCategorie', (req, res) => {
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
+          .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
               res.json({ success: true, data }); // On renvoie les articles trouvés
@@ -147,12 +148,14 @@ router.post('/searchByTri', (req, res) => {
 
     if (!categorie && tri === 'Le plus récent') { // Si la catégorie est définie et qu'il n'y a pas de tri
       Article.find()
+        .populate("categorie etat auteur editeur annonceur acheteur")
         .then((data) => {
           data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
           res.json({ success: true, data }); // On renvoie les articles trouvés
         });
     } else if (!categorie && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
       Article.find()
+      .populate("categorie etat auteur editeur annonceur acheteur")
         .then((data) => {
           data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
           res.json({ success: true, data }); // On renvoie les articles trouvés
@@ -161,6 +164,7 @@ router.post('/searchByTri', (req, res) => {
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
+          .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
               res.json({ success: true, data }); // On renvoie les articles trouvés
@@ -170,6 +174,7 @@ router.post('/searchByTri', (req, res) => {
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
+          .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
               res.json({ success: true, data }); // On renvoie les articles trouvés
@@ -179,6 +184,7 @@ router.post('/searchByTri', (req, res) => {
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then(() => {
           Article.find() // On cherche les articles qui correspondent à la catégorie
+          .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
               res.json({ success: true, data }); // On renvoie les articles trouvés
@@ -188,6 +194,7 @@ router.post('/searchByTri', (req, res) => {
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then(() => {
           Article.find() // On cherche les articles qui correspondent à la catégorie
+          .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
               res.json({ success: true, data }); // On renvoie les articles trouvés
