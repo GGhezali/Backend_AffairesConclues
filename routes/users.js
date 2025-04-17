@@ -8,6 +8,7 @@ const uid2 = require("uid2");
 const bcrypt = require("bcrypt");
 // On importe notre modèle/schema d'utilisateur
 const User = require("../models/users");
+const { use } = require("bcrypt/promises");
 
 router.post("/sign-up", (req, res) => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
@@ -120,5 +121,52 @@ router.post("/findUserByToken", (req, res) => {
       res.json({ result: false, error: "Erreur serveur." });
     });
 });
+
+router.put("/updateInfo/:email", (req, res) => {
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
+
+  // On vérifie si l'email est valide
+  if (!emailRegex.test(req.body.email)) {
+    return res.json({ result: false, error: "Email invalide" });
+  }
+  if (!emailRegex.test(req.body.email)) {
+    return res.json({ result: false, error: "Email invalide" });
+  }
+
+
+  // Vérifie si le nouvel email existe déjà (et que ce n’est pas le même que l’actuel)
+  User.findOne({ email: req.body.email })
+    .then((emailExiste) => {
+      if (emailExiste && req.body.email !== req.params.email) {
+        return res.json({ result: false, error: "E-mail déjà existant" });
+      }
+      // Vérifie si l'email est different de l'email qu'on a deja
+      if (req.body.email === req.params.email) {
+        return res.json({
+          result: false,
+          error: "Veuillez inscrire un email différent de celui actuel",
+        });
+      }
+
+      // Met à jour l'utilisateur
+      return User.findOneAndUpdate(
+        { email: req.params.email }, // on cherche avec l'ancien email
+        {
+          email: req.body.email,
+          username: req.body.username,
+          telephone: req.body.telephone,
+        },
+        { new: true } // pour récupérer la version mise à jour
+      );
+    })
+    .then(() => {
+      res.json({ result: true, message: "Mise à jour réussie." });
+    })
+    .catch(() => {
+      res.json({ result: false, error: "Erreur serveur." });
+    });
+});
+// Vérifie si la mise à jour a réussi
 
 module.exports = router;
