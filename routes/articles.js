@@ -42,7 +42,14 @@ router.post("/publish", async (req, res) => {
   const foundAcheteur = await User.findOne({ username: req.body.acheteur });
 
   //On check que tous les champs sont remplis avant de créer l'article
-  if (foundCategory, foundEtat, foundAuteur, foundEditeur, foundAnonceur, foundAcheteur) {
+  if (
+    (foundCategory,
+    foundEtat,
+    foundAuteur,
+    foundEditeur,
+    foundAnonceur,
+    foundAcheteur)
+  ) {
     //On construit le nouvel article en fonction des champs remplis par l'utilisateur
     const newArticle = new Article({
       titre: req.body.titre,
@@ -74,33 +81,35 @@ router.post("/publish", async (req, res) => {
   } else {
     res.json({ result: false, message: "Missing fields" });
   }
-
 });
 
-router.post('/searchByCategorie', (req, res) => {
+router.post("/searchByCategorie", (req, res) => {
   try {
     const { categorie, tri } = req.body; // On récupère la catégorie envoyée par le frontend
 
-    if (categorie !== '--All Categories--' && !tri) { // Si la catégorie est définie et qu'il n'y a pas de tri
+    if (categorie !== "--All Categories--" && !tri) {
+      // Si la catégorie est définie et qu'il n'y a pas de tri
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
             .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               res.json({ success: true, data }); // On renvoie les articles trouvés
-            })
+            });
         });
-    } else if (categorie !== '--All Categories--' && tri === 'Le plus récent') { // Si la catégorie et le tri sont définis
+    } else if (categorie !== "--All Categories--" && tri === "Le plus récent") {
+      // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
-          .populate("categorie etat auteur editeur annonceur acheteur")
+            .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
               res.json({ success: true, data }); // On renvoie les articles trouvés
-            })
+            });
         });
-    } else if (categorie !== '--All Categories--' && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
+    } else if (categorie !== "--All Categories--" && tri === "Prix croissant") {
+      // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
@@ -108,16 +117,16 @@ router.post('/searchByCategorie', (req, res) => {
             .then((data) => {
               data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
               res.json({ success: true, data }); // On renvoie les articles trouvés
-            })
+            });
         });
-    } else if (categorie === '--All Categories--' && !tri) {
+    } else if (categorie === "--All Categories--" && !tri) {
       Article.find() // On cherche les articles qui correspondent à la catégorie
         .populate("categorie etat auteur editeur annonceur acheteur")
         .then((data) => {
           res.json({ success: true, data }); // On renvoie les articles trouvés
-
         });
-    } else if (categorie === '--All Categories--' && tri === 'Le plus récent') { // Si la catégorie et le tri sont définis
+    } else if (categorie === "--All Categories--" && tri === "Le plus récent") {
+      // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then(() => {
           Article.find() // On cherche les articles qui correspondent à la catégorie
@@ -125,9 +134,10 @@ router.post('/searchByCategorie', (req, res) => {
             .then((data) => {
               data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
               res.json({ success: true, data }); // On renvoie les articles trouvés
-            })
+            });
         });
-    } else if (categorie === '--All Categories--' && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
+    } else if (categorie === "--All Categories--" && tri === "Prix croissant") {
+      // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then(() => {
           Article.find() // On cherche les articles qui correspondent à la catégorie
@@ -135,76 +145,103 @@ router.post('/searchByCategorie', (req, res) => {
             .then((data) => {
               data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
               res.json({ success: true, data }); // On renvoie les articles trouvés
-            })
+            });
         });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: "Erreur lors de la recherche" }); // En cas d'erreur, on renvoie un message d'erreur
-  };
-})
+    res
+      .status(500)
+      .json({ success: false, message: "Erreur lors de la recherche" }); // En cas d'erreur, on renvoie un message d'erreur
+  }
+});
 
-router.post('/searchByTri', (req, res) => {
+router.post("/searchByTri", (req, res) => {
   try {
     const { categorie, tri } = req.body; // On récupère la catégorie envoyée par le frontend
 
-    if (!categorie && tri === 'Le plus récent') { // Si la catégorie est définie et qu'il n'y a pas de tri
+    if (!categorie && tri === "Le plus récent") {
+      // Si la catégorie est définie et qu'il n'y a pas de tri
       Article.find()
         .populate("categorie etat auteur editeur annonceur acheteur")
         .then((data) => {
           data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
           res.json({ success: true, data }); // On renvoie les articles trouvés
         });
-    } else if (!categorie && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
+    } else if (!categorie && tri === "Prix croissant") {
+      // Si la catégorie et le tri sont définis
       Article.find()
-      .populate("categorie etat auteur editeur annonceur acheteur")
+        .populate("categorie etat auteur editeur annonceur acheteur")
         .then((data) => {
           data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
           res.json({ success: true, data }); // On renvoie les articles trouvés
         });
-    } else if (categorie !== '--All Categories--' && tri === 'Le plus récent') { // Si la catégorie et le tri sont définis
+    } else if (categorie !== "--All Categories--" && tri === "Le plus récent") {
+      // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
-          .populate("categorie etat auteur editeur annonceur acheteur")
+            .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
               res.json({ success: true, data }); // On renvoie les articles trouvés
-            })
+            });
         });
-    } else if (categorie !== '--All Categories--' && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
+    } else if (categorie !== "--All Categories--" && tri === "Prix croissant") {
+      // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then((data) => {
           Article.find({ categorie: data._id }) // On cherche les articles qui correspondent à la catégorie
-          .populate("categorie etat auteur editeur annonceur acheteur")
+            .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
               res.json({ success: true, data }); // On renvoie les articles trouvés
-            })
+            });
         });
-    } else if (categorie === '--All Categories--' && tri === 'Le plus récent') { // Si la catégorie et le tri sont définis
+    } else if (categorie === "--All Categories--" && tri === "Le plus récent") {
+      // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then(() => {
           Article.find() // On cherche les articles qui correspondent à la catégorie
-          .populate("categorie etat auteur editeur annonceur acheteur")
+            .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               data.sort((a, b) => b.timer.getTime() - a.timer.getTime()); // On trie les articles par date de création
               res.json({ success: true, data }); // On renvoie les articles trouvés
-            })
+            });
         });
-    } else if (categorie === '--All Categories--' && tri === 'Prix croissant') { // Si la catégorie et le tri sont définis
+    } else if (categorie === "--All Categories--" && tri === "Prix croissant") {
+      // Si la catégorie et le tri sont définis
       Categorie.findOne({ name: categorie }) // On cherche la catégorie dans la BDD
         .then(() => {
           Article.find() // On cherche les articles qui correspondent à la catégorie
-          .populate("categorie etat auteur editeur annonceur acheteur")
+            .populate("categorie etat auteur editeur annonceur acheteur")
             .then((data) => {
               data.sort((a, b) => a.currentPrice - b.currentPrice); // On trie les articles par prix croissant
               res.json({ success: true, data }); // On renvoie les articles trouvés
-            })
+            });
         });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: "Erreur lors de la recherche" }); // En cas d'erreur, on renvoie un message d'erreur
-  };
-})
+    res
+      .status(500)
+      .json({ success: false, message: "Erreur lors de la recherche" }); // En cas d'erreur, on renvoie un message d'erreur
+  }
+});
+
+// Route pour recuperer les articles en cours publiés par un utilisateur (Mes publications)
+router.get("/mes-publications/:userId", (req, res) => {
+  const userId = req.params.userId; // On récupère l'id de l'utilisateur dans l'url
+
+  Article.find({ annonceur: userId, isDone: false })
+    .populate("categorie etat auteur editeur annonceur acheteur") // Pour avoir les infos complètes
+    .then((articles) => {
+      // Si tout va bien, j’envoie les articles
+      res.json({ success: true, data: articles });
+    })
+    .catch((error) => {
+      // Si j’ai une erreur, je l’affiche dans la console
+      console.error("Erreur dans /mes-publications :", error);
+      res.status(500).json({ success: false, message: "Erreur serveur" });
+    });
+});
 
 module.exports = router;
