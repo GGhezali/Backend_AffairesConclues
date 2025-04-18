@@ -67,8 +67,8 @@ router.post("/publish", async (req, res) => {
       description: req.body.description,
       auteur: foundAuteur._id,
       editeur: foundEditeur._id,
-      startPrice: req.body.price,
-      currentPrice: req.body.price,
+      startPrice: req.body.prix,
+      currentPrice: req.body.prix,
       localisation: {
         adresse: req.body.localisation.title,
         longitude: req.body.localisation.coordinates[0],
