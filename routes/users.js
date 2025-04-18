@@ -122,48 +122,46 @@ router.post("/findUserByToken", (req, res) => {
     });
 });
 
-router.put("/updateInfo/:email", (req, res) => {
+router.put("/updateInfo/:token", (req, res) => {
 
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
+  // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
 
   // On vérifie si l'email est valide
-  if (!emailRegex.test(req.body.email)) {
-    return res.json({ result: false, error: "Email invalide" });
-  }
-  if (!emailRegex.test(req.body.email)) {
-    return res.json({ result: false, error: "Email invalide" });
-  }
-
+  // if (!emailRegex.test(req.body.email)) {
+  //  return res.json({ result: false, error: "Email invalide" });
+  //} 
 
   // Vérifie si le nouvel email existe déjà (et que ce n’est pas le même que l’actuel)
-  User.findOne({ email: req.body.email })
-    .then((emailExiste) => {
-      if (emailExiste && req.body.email !== req.params.email) {
+  User.findOne({ token: req.params.token })
+    .then((user) => {
+      if (user.token !== req.params.token && req.body.email === user.email) {
         return res.json({ result: false, error: "E-mail déjà existant" });
       }
       // Vérifie si l'email est different de l'email qu'on a deja
-      if (req.body.email === req.params.email) {
+      if (user.token === req.params.token && req.body.email === user.email) {
         return res.json({
           result: false,
           error: "Veuillez inscrire un email différent de celui actuel",
         });
       }
 
-      // Met à jour l'utilisateur
-      return User.findOneAndUpdate(
-        { email: req.params.email }, // on cherche avec l'ancien email
-        {
-          email: req.body.email,
-          username: req.body.username,
-          telephone: req.body.telephone,
-         donneeBancaire: req.body.donneeBancaire,
-          // password: req.body.password, // on ne met pas à jour le mot de passe ici
-        },
-        { new: true } // pour récupérer la version mise à jour
-      );
-    })
-    .then(() => {
-      res.json({ result: true, message: "Mise à jour réussie." });
+      if (user.token === req.params.token && req.body.email !== user.email) {
+
+        return User.findOneAndUpdate(
+          { token: req.params.token }, // on cherche avec l'ancien email
+          {
+            email: req.body.email,
+            username: req.body.username,
+            telephone: req.body.telephone,
+            donneeBancaire: req.body.donneeBancaire,
+            // password: req.body.password, // on ne met pas à jour le mot de passe ici
+          },
+          { new: true } // pour récupérer la version mise à jour
+          .then(() => {
+            res.json({ result: true, message: "Mise à jour réussie." });
+          })
+        );
+      }// Met à jour l'utilisateur
     })
     .catch(() => {
       res.json({ result: false, error: "Erreur serveur." });
