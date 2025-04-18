@@ -207,4 +207,39 @@ router.post('/searchByTri', (req, res) => {
   };
 })
 
+// Route pour modifier le prix actuel d'un article
+router.put("/updateCurrentPrice", (req, res) => {
+  try {
+    const id = req.body.id;
+    const newPrice = Number(req.body.newPrice);
+    const newBuyer = req.body.newBuyer || null;
+  
+    User.findOne({ _id: newBuyer })
+      .then((data) => {
+        // Vérification si l'acheteur existe
+        if (!data || newBuyer === null) {
+          return res.status(400).json({ message: "Acheteur introuvable" });
+        }
+
+        // Si l'acheteur est trouvé, on continue avec la mise à jour du prix
+        Article.findOne({ _id: id })
+          .then((data) => {
+            if (!newPrice) {
+              return res.status(400).json({ message: "Veuillez entrer un prix" });
+            } if (data.currentPrice >= newPrice) {
+              return res.status(400).json({ message: "Le prix actuel doit être supérieur au nouveau prix" });
+            } else {
+              Article.updateOne({ _id: id }, { currentPrice: newPrice, $push: {acheteur: newBuyer} })
+                .then(() => {
+                  Article.findOne({ _id: id })
+                    .then((data) => res.json({ data }));
+              });
+            }
+          });
+      });
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la mise à jour du prix" });
+  }
+});
+
 module.exports = router;
