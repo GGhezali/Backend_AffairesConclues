@@ -36,9 +36,9 @@ router.post("/updateIsDone", (req, res) => {
 
 // Route pour publier un nouvel article
 router.post("/publish", async (req, res) => {
-  console.log("req.body", req.body);
-  console.log("req.files", req.files);
-  console.log("In the publish route");
+
+  console.log("photos =>", req.body.photoUrl);
+
   //On "fetch" dans les BDD préremplies pour récupérer les id des champs
   const foundCategory = await Categorie.findOne({ name: req.body.categorie });
   const foundEtat = await Etat.findOne({ condition: req.body.etat });
@@ -46,11 +46,6 @@ router.post("/publish", async (req, res) => {
   const foundEditeur = await Editeur.findOne({ name: req.body.editeur });
   const foundAnonceur = await User.findOne({ _id : req.body.annonceur });
 
-  console.log("Category", foundCategory);
-  console.log("Etat", foundEtat);
-  console.log("Auteur", foundAuteur);
-  console.log("Editeur", foundEditeur);
-  console.log("Annonceur", foundAnonceur);
   if (
     foundCategory &&
     foundEtat &&
@@ -58,7 +53,7 @@ router.post("/publish", async (req, res) => {
     foundEditeur &&
     foundAnonceur
   ) {
-    console.log("about to create a new document");
+
     //On construit le nouvel article en fonction des champs remplis par l'utilisateur
     const newArticle = new Article({
       titre: req.body.titre,
@@ -79,11 +74,10 @@ router.post("/publish", async (req, res) => {
       timer: new Date(), // On initialise le timer à la date actuelle
       isDone: false,
     });
-    console.log("new article created");
+
     // On sauvegarde l'article' dans la base de données
     newArticle.save().then((data) => {
       // On renvoie un succès et on affiche l'article poster dans le backend
-      console.log("data ? =>", data);
       res.json({ result: true, data });
     });
   } else {
