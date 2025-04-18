@@ -255,11 +255,15 @@ router.put("/updateCurrentPrice", (req, res) => {
   }
 });
 
+// Route pour récupérer les articles d'un utilisateur
+
 router.get("/mes-publications/:userId", (req, res) => {
+  // On récupère l'id de l'utilisateur dans l'url
   const userId = req.params.userId;
 
-  Article.find({ annonceur: userId, isDone: false })
-    .populate("categorie etat auteur editeur annonceur acheteur")
+  Article.find({ annonceur: userId, isDone: false }) // On cherche les articles de l'utilisateur qui ne sont pas terminés
+
+    .populate("categorie etat auteur editeur annonceur acheteur") // On populate les champs pour avoir les données complètes
     .then((articles) => {
       res.json({ success: true, data: articles });
     })
