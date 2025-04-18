@@ -11,12 +11,16 @@ const User = require("../models/users");
 const { use } = require("bcrypt/promises");
 
 router.post("/sign-up", (req, res) => {
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
-
-  // On vérifie si l'email est valide
-  if (!emailRegex.test(req.body.email)) {
-    return res.json({ result: false, error: "Email invalide" });
+  // on vérifie si l'utilisateur a bien un username de 6 caractères minimum
+  if (req.body.username.length < 6) {
+    return res.json({
+      result: false,
+      error: "Le nom d'utilisateur doit avoir au moins 6 caractères.",
+    });
   }
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
+  // On vérifie si l'email est valide
   if (!emailRegex.test(req.body.email)) {
     return res.json({ result: false, error: "Email invalide" });
   }
@@ -66,7 +70,7 @@ router.post("/sign-up", (req, res) => {
     password: hash,
     //on enregistre le token
     token: uid2(32),
-    
+
     donneeBancaire: null,
 
     telephone: null,
@@ -122,7 +126,7 @@ router.post("/findUserByToken", (req, res) => {
     });
 });
 
-router.put("/updateInfo/:email", (req, res) => {
+router.put("/updateInfo/:userId", (req, res) => {
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
 
@@ -130,44 +134,73 @@ router.put("/updateInfo/:email", (req, res) => {
   if (!emailRegex.test(req.body.email)) {
     return res.json({ result: false, error: "Email invalide" });
   }
-  if (!emailRegex.test(req.body.email)) {
-    return res.json({ result: false, error: "Email invalide" });
-  }
 
-
-  // Vérifie si le nouvel email existe déjà (et que ce n’est pas le même que l’actuel)
-  User.findOne({ email: req.body.email })
-    .then((emailExiste) => {
-      if (emailExiste && req.body.email !== req.params.email) {
-        return res.json({ result: false, error: "E-mail déjà existant" });
-      }
-      // Vérifie si l'email est different de l'email qu'on a deja
-      if (req.body.email === req.params.email) {
-        return res.json({
-          result: false,
-          error: "Veuillez inscrire un email différent de celui actuel",
-        });
-      }
-
-      // Met à jour l'utilisateur
-      return User.findOneAndUpdate(
-        { email: req.params.email }, // on cherche avec l'ancien email
-        {
-          email: req.body.email,
-          username: req.body.username,
-          telephone: req.body.telephone,
-         donneeBancaire: req.body.donneeBancaire,
-          // password: req.body.password, // on ne met pas à jour le mot de passe ici
-        },
-        { new: true } // pour récupérer la version mise à jour
-      );
-    })
-    .then(() => {
-      res.json({ result: true, message: "Mise à jour réussie." });
-    })
-    .catch(() => {
-      res.json({ result: false, error: "Erreur serveur." });
+  // On verifie si le mot de passe contient au moin 8 CARACTERES
+  if (req.body.password.length < 8)
+    return res.json({
+      result: false,
+      error: "Le mot de passe doit avoir au moins 8 caractères.",
     });
+
+  // On vérifie si le mot de passe contient au moins une minuscule
+  if (!/[A-Z]/.test(req.body.password))
+    return res.json({
+      result: false,
+      error: "Le mot de passe doit contenir au moins une majuscule.",
+    });
+
+  // On vérifie si le mot de passe contient au moins un chiffre
+  if (!/\d/.test(req.body.password))
+    return res.json({
+      result: false,
+      error: "Le mot de passe doit contenir au moins un chiffre.",
+    });
+
+  // On vérifie si le mot de passe contient au moins un caractère spécial
+  if (!/[^a-zA-Z0-9]/.test(req.body.password))
+    return res.json({
+      result: false,
+      error: "Le mot de passe doit contenir au moins un caractère spécial.",
+    });
+
+    if (req.body.username.length < 6) {
+      return res.json({
+        result: false,
+        error: "Le nom d'utilisateur doit avoir au moins 6 caractères.",
+      });
+    }
+
+  // Vérifie si le nouvel email existe déjà
+  User.find().then((users) => {
+    for (let user of users) {
+      // Vérifie si l'email existe déjà
+      if (user._id !== req.params.userId && user.email === req.body.email) {
+        return res.json({ result: false, error: "E-mail déjà existant" });
+      } else {
+        User.updateOne(
+          { _id: req.params.userId }, // on cherche avec l'ancien email
+          {
+            email: req.body.email,
+            username: req.body.username,
+            telephone: req.body.telephone,
+            donneeBancaire: req.body.donneeBancaire,
+            // password: req.body.password, // on ne met pas à jour le mot de passe ici
+          }
+        )
+          .then(() => {
+            res.json({ result: true, message: "Mise à jour réussie." });
+          })
+          .catch((error) => {
+            res.json({
+              result: false,
+              error: "Erreur lors de la mise à jour.",
+            });
+          });
+      }
+    }
+
+    // Met à jour l'utilisateur
+  });
 });
 // Vérifie si la mise à jour a réussi
 
