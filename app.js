@@ -14,10 +14,13 @@ var mesEncheresRouter = require("./routes/mes-encheres");
 var etatsRouter = require("./routes/etats");
 var auteursRouter = require("./routes/auteurs");
 var editeursRouter = require("./routes/editeurs");
+const fileUpload = require("express-fileupload");
 
 var app = express();
 const cors = require("cors");
 app.use(cors());
+
+app.use(fileUpload());
 
 app.use(logger("dev"));
 app.use(express.json());
