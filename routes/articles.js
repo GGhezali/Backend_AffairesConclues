@@ -229,7 +229,7 @@ router.put("/updateCurrentPrice", (req, res) => {
 
     User.findOne({ _id: newBuyer }).then((data) => {
       if (!data || newBuyer === null) {
-        return res.status(400).json({ message: "Acheteur introuvable" });
+        return res.status(400).json({ message: "Veuillez vous connecter pour enchérir" });
       }
 
         // Si l'acheteur est trouvé, on continue avec la mise à jour du prix
