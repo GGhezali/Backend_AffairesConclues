@@ -8,7 +8,7 @@ const uid2 = require("uid2");
 const bcrypt = require("bcrypt");
 // On importe notre modèle/schema d'utilisateur
 const User = require("../models/users");
-const { use } = require("bcrypt/promises");
+const { ObjectId } = require("mongodb");
 
 router.post("/sign-up", (req, res) => {
   // on vérifie si l'utilisateur a bien un username de 6 caractères minimum
@@ -126,8 +126,7 @@ router.post("/findUserByToken", (req, res) => {
     });
 });
 
-router.put("/updateInfo/:userId", (req, res) => {
-
+router.post("/updateInfo/:userId", (req, res) => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/;
 
   // On vérifie si l'email est valide
@@ -163,22 +162,23 @@ router.put("/updateInfo/:userId", (req, res) => {
       error: "Le mot de passe doit contenir au moins un caractère spécial.",
     });
 
-    if (req.body.username.length < 6) {
-      return res.json({
-        result: false,
-        error: "Le nom d'utilisateur doit avoir au moins 6 caractères.",
-      });
-    }
+  if (req.body.username.length < 6) {
+    return res.json({
+      result: false,
+      error: "Le nom d'utilisateur doit avoir au moins 6 caractères.",
+    });
+  }
 
   // Vérifie si le nouvel email existe déjà
   User.find().then((users) => {
+    console.log("users =>", users);
     for (let user of users) {
       // Vérifie si l'email existe déjà
       if (user._id !== req.params.userId && user.email === req.body.email) {
         return res.json({ result: false, error: "E-mail déjà existant" });
       } else {
         User.updateOne(
-          { _id: req.params.userId }, // on cherche avec l'ancien email
+          { _id: new ObjectId(req.params.userId) }, // on cherche avec l'ancien email
           {
             email: req.body.email,
             username: req.body.username,
@@ -188,9 +188,11 @@ router.put("/updateInfo/:userId", (req, res) => {
           }
         )
           .then(() => {
+            console.log("Mise à jour réussie");
             res.json({ result: true, message: "Mise à jour réussie." });
           })
           .catch((error) => {
+            console.error("Erreur lors de la mise à jour", error);
             res.json({
               result: false,
               error: "Erreur lors de la mise à jour.",
@@ -199,7 +201,6 @@ router.put("/updateInfo/:userId", (req, res) => {
       }
     }
 
-    // Met à jour l'utilisateur
   });
 });
 // Vérifie si la mise à jour a réussi
