@@ -39,31 +39,37 @@ router.post("/updateIsDone", (req, res) => {
 
 //Route pour publier un nouvel article-----------------------------------------------------------------------------------------------------
 router.post("/publish", async (req, res) => {
+  console.log("req.body", req.body);
+  console.log("req.files", req.files);
+  console.log("In the publish route");
   //On "fetch" dans les BDD préremplies pour récupérer les id des champs
   const foundCategory = await Categorie.findOne({ name: req.body.categorie });
   const foundEtat = await Etat.findOne({ condition: req.body.etat });
   const foundAuteur = await Auteur.findOne({ name: req.body.auteur });
   const foundEditeur = await Editeur.findOne({ name: req.body.editeur });
-  const foundAnonceur = await User.findOne({ username: req.body.annonceur });
-  const foundAcheteur = await User.findOne({ username: req.body.acheteur });
+  const foundAnonceur = await User.findOne({ _id : req.body.annonceur });
 
-  //On check que tous les champs sont remplis avant de créer l'article
+  console.log("Category", foundCategory);
+  console.log("Etat", foundEtat);
+  console.log("Auteur", foundAuteur);
+  console.log("Editeur", foundEditeur);
+  console.log("Annonceur", foundAnonceur);
   if (
-    (foundCategory,
-    foundEtat,
-    foundAuteur,
-    foundEditeur,
-    foundAnonceur,
-    foundAcheteur)
+    foundCategory &&
+    foundEtat &&
+    foundAuteur &&
+    foundEditeur &&
+    foundAnonceur
   ) {
+    console.log("about to create a new document");
     //On construit le nouvel article en fonction des champs remplis par l'utilisateur
     const newArticle = new Article({
       titre: req.body.titre,
-      categorie: new ObjectId(foundCategory._id),
-      etat: new ObjectId(foundEtat._id),
+      categorie: foundCategory._id,
+      etat: foundEtat._id,
       description: req.body.description,
-      auteur: new ObjectId(foundAuteur._id),
-      editeur: new ObjectId(foundEditeur._id),
+      auteur: foundAuteur._id,
+      editeur: foundEditeur._id,
       startPrice: req.body.price,
       currentPrice: req.body.price,
       localisation: {
@@ -72,15 +78,15 @@ router.post("/publish", async (req, res) => {
         latitude: req.body.localisation.coordinates[1],
       },
       photoUrl: req.body.photoUrl,
-      annonceur: new ObjectId(foundAnonceur._id),
-      acheteur: new ObjectId(foundAcheteur._id),
+      annonceur: foundAnonceur._id,
       timer: new Date(), // On initialise le timer à la date actuelle
       isDone: false,
     });
-
+    console.log("new article created");
     // On sauvegarde l'article' dans la base de données
     newArticle.save().then((data) => {
       // On renvoie un succès et on affiche l'article poster dans le backend
+      console.log("data ? =>", data);
       res.json({ result: true, data });
     });
     //Si tout n'est pas rempli, on renvoie un message d'erreur
@@ -248,7 +254,7 @@ router.post("/uploadPhoto", async (req, res) => {
     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
     fs.unlinkSync(photoPath);
     console.log(resultCloudinary.secure_url);
-    
+
     res.json({ result: true, url: resultCloudinary.secure_url });
   } else {
     res.json({ result: false, error: resultMove });
@@ -257,37 +263,38 @@ router.post("/uploadPhoto", async (req, res) => {
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-
 // Route pour modifier le prix actuel d'un article-----------------------------------------------------------------------------------------
 router.put("/updateCurrentPrice", (req, res) => {
   try {
     const id = req.body.id;
     const newPrice = Number(req.body.newPrice);
     const newBuyer = req.body.newBuyer || null;
-  
-    User.findOne({ _id: newBuyer })
-      .then((data) => {
-        // Vérification si l'acheteur existe
-        if (!data || newBuyer === null) {
-          return res.status(400).json({ message: "Acheteur introuvable" });
-        }
 
-        // Si l'acheteur est trouvé, on continue avec la mise à jour du prix
-        Article.findOne({ _id: id })
-          .then((data) => {
-            if (!newPrice) {
-              return res.status(400).json({ message: "Veuillez entrer un prix" });
-            } if (data.currentPrice >= newPrice) {
-              return res.status(400).json({ message: "Le prix actuel doit être supérieur au nouveau prix" });
-            } else {
-              Article.updateOne({ _id: id }, { currentPrice: newPrice, $push: {acheteur: newBuyer} })
-                .then(() => {
-                  Article.findOne({ _id: id })
-                    .then((data) => res.json({ data }));
-              });
-            }
+    User.findOne({ _id: newBuyer }).then((data) => {
+      // Vérification si l'acheteur existe
+      if (!data || newBuyer === null) {
+        return res.status(400).json({ message: "Acheteur introuvable" });
+      }
+
+      // Si l'acheteur est trouvé, on continue avec la mise à jour du prix
+      Article.findOne({ _id: id }).then((data) => {
+        if (!newPrice) {
+          return res.status(400).json({ message: "Veuillez entrer un prix" });
+        }
+        if (data.currentPrice >= newPrice) {
+          return res.status(400).json({
+            message: "Le prix actuel doit être supérieur au nouveau prix",
           });
+        } else {
+          Article.updateOne(
+            { _id: id },
+            { currentPrice: newPrice, $push: { acheteur: newBuyer } }
+          ).then(() => {
+            Article.findOne({ _id: id }).then((data) => res.json({ data }));
+          });
+        }
       });
+    });
   } catch (error) {
     res.status(500).json({ message: "Erreur lors de la mise à jour du prix" });
   }
