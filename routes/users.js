@@ -149,11 +149,11 @@ router.post("/updateInfo/:userId", (req, res) => {
     });
 
   // On vérifie si le mot de passe contient au moins un chiffre
-  if (!/\d/.test(req.body.password))
-    return res.json({
-      result: false,
-      error: "Le mot de passe doit contenir au moins un chiffre.",
-    });
+ // if (!/\d/.test(req.body.password))
+   // return res.json({
+     // result: false,
+      //error: "Le mot de passe doit contenir au moins un chiffre.",
+    //});
 
   // On vérifie si le mot de passe contient au moins un caractère spécial
   if (!/[^a-zA-Z0-9]/.test(req.body.password))
@@ -162,7 +162,7 @@ router.post("/updateInfo/:userId", (req, res) => {
       error: "Le mot de passe doit contenir au moins un caractère spécial.",
     });
 
-  if (req.body.username.length < 6) {
+  if (req.body.username.length < 5) {
     return res.json({
       result: false,
       error: "Le nom d'utilisateur doit avoir au moins 6 caractères.",
