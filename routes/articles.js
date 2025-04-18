@@ -238,12 +238,12 @@ router.put("/updateCurrentPrice", (req, res) => {
             if (!newPrice) {
               return res.status(400).json({ message: "Veuillez entrer un prix" });
             } if (data.currentPrice + 0.49 >= newPrice) {
-              return res.status(400).json({ message: "Le prix actuel doit être supérieur au nouveau prix" });
+              return res.status(400).json({ message: "Le prix actuel doit respecter la mise minimale" });
             } else {
               Article.updateOne({ _id: id }, { currentPrice: newPrice, $push: {acheteur: newBuyer} })
                 .then(() => {
                   Article.findOne({ _id: id })
-                    .then((data) => res.json({ data }));
+                    .then((data) => res.json({ data, message: "Prix mis à jour avec succès" }));
               });
             }
           });
