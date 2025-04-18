@@ -265,7 +265,7 @@ router.put("/updateCurrentPrice", (req, res) => {
           .then((data) => {
             if (!newPrice) {
               return res.status(400).json({ message: "Veuillez entrer un prix" });
-            } if (data.currentPrice >= newPrice) {
+            } if (data.currentPrice + 0.49 >= newPrice) {
               return res.status(400).json({ message: "Le prix actuel doit être supérieur au nouveau prix" });
             } else {
               Article.updateOne({ _id: id }, { currentPrice: newPrice, $push: {acheteur: newBuyer} })
