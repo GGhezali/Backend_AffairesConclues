@@ -39,12 +39,12 @@ router.post("/publish", async (req, res) => {
 
   console.log("photos =>", req.body.photoUrl);
 
-  //On "fetch" dans les BDD préremplies pour récupérer les id des champs
+  //On "fetch" dans les collections en BDD pour récupérer les id des champs
   const foundCategory = await Categorie.findOne({ name: req.body.categorie });
   const foundEtat = await Etat.findOne({ condition: req.body.etat });
   const foundAuteur = await Auteur.findOne({ name: req.body.auteur });
   const foundEditeur = await Editeur.findOne({ name: req.body.editeur });
-  const foundAnonceur = await User.findOne({ _id : req.body.annonceur });
+  //const foundAnonceur = await User.findOne({ _id : req.body.annonceur });
 
   if (
     foundCategory &&
@@ -70,7 +70,8 @@ router.post("/publish", async (req, res) => {
         latitude: req.body.localisation.coordinates[1],
       },
       photoUrl: req.body.photoUrl,
-      annonceur: foundAnonceur._id,
+      //annonceur: foundAnonceur._id,
+      annonceur: req.body.annonceur,
       timer: new Date(), // On initialise le timer à la date actuelle
       isDone: false,
     });
@@ -81,7 +82,7 @@ router.post("/publish", async (req, res) => {
       res.json({ result: true, data });
     });
   } else {
-    res.json({ result: false, message: "Missing fields" });
+    res.json({ result: false, error: "Missing fields" });
   }
 });
 
