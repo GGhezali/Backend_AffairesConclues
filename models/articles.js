@@ -18,7 +18,7 @@ const articleSchema = mongoose.Schema({
   localisation: localisationSchema,
   photoUrl: [String],
   annonceur: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
-  acheteur: [{ type: mongoose.Schema.Types.ObjectId, ref: "users" }],
+  acheteur: [{ type: mongoose.Schema.Types.ObjectId, ref: "users", default: null }],
   timer: Date,
   isDone: Boolean,
 });

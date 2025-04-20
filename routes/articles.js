@@ -36,47 +36,53 @@ router.post("/updateIsDone", (req, res) => {
 
 // Route pour publier un nouvel article
 router.post("/publish", async (req, res) => {
+
+  console.log("photos =>", req.body.photoUrl);
+
+  //On "fetch" dans les collections en BDD pour récupérer les id des champs
   const foundCategory = await Categorie.findOne({ name: req.body.categorie });
   const foundEtat = await Etat.findOne({ condition: req.body.etat });
   const foundAuteur = await Auteur.findOne({ name: req.body.auteur });
   const foundEditeur = await Editeur.findOne({ name: req.body.editeur });
-  const foundAnonceur = await User.findOne({ username: req.body.annonceur });
-  const foundAcheteur = await User.findOne({ username: req.body.acheteur });
+  //const foundAnonceur = await User.findOne({ _id : req.body.annonceur });
 
   if (
     foundCategory &&
     foundEtat &&
     foundAuteur &&
     foundEditeur &&
-    foundAnonceur &&
-    foundAcheteur
+    foundAnonceur
   ) {
+
+    //On construit le nouvel article en fonction des champs remplis par l'utilisateur
     const newArticle = new Article({
       titre: req.body.titre,
-      categorie: new ObjectId(foundCategory._id),
-      etat: new ObjectId(foundEtat._id),
+      categorie: foundCategory._id,
+      etat: foundEtat._id,
       description: req.body.description,
-      auteur: new ObjectId(foundAuteur._id),
-      editeur: new ObjectId(foundEditeur._id),
-      startPrice: req.body.price,
-      currentPrice: req.body.price,
+      auteur: foundAuteur._id,
+      editeur: foundEditeur._id,
+      startPrice: req.body.prix,
+      currentPrice: req.body.prix,
       localisation: {
         adresse: req.body.localisation.title,
         longitude: req.body.localisation.coordinates[0],
         latitude: req.body.localisation.coordinates[1],
       },
       photoUrl: req.body.photoUrl,
-      annonceur: new ObjectId(foundAnonceur._id),
-      acheteur: new ObjectId(foundAcheteur._id),
-      timer: new Date(),
+      //annonceur: foundAnonceur._id,
+      annonceur: req.body.annonceur,
+      timer: new Date(), // On initialise le timer à la date actuelle
       isDone: false,
     });
 
+    // On sauvegarde l'article' dans la base de données
     newArticle.save().then((data) => {
+      // On renvoie un succès et on affiche l'article poster dans le backend
       res.json({ result: true, data });
     });
   } else {
-    res.json({ result: false, message: "Missing fields" });
+    res.json({ result: false, error: "Missing fields" });
   }
 });
 
@@ -214,13 +220,17 @@ router.post("/uploadPhoto", async (req, res) => {
   if (!resultMove) {
     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
     fs.unlinkSync(photoPath);
+    console.log(resultCloudinary.secure_url);
+    
     res.json({ result: true, url: resultCloudinary.secure_url });
   } else {
     res.json({ result: false, error: resultMove });
   }
 });
 
-// Route pour modifier le prix actuel d'un article
+//-----------------------------------------------------------------------------------------------------------------------------------------
+
+// Route pour modifier le prix actuel d'un article-----------------------------------------------------------------------------------------
 router.put("/updateCurrentPrice", (req, res) => {
   try {
     const id = req.body.id;
