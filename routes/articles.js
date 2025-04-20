@@ -44,14 +44,12 @@ router.post("/publish", async (req, res) => {
   const foundEtat = await Etat.findOne({ condition: req.body.etat });
   const foundAuteur = await Auteur.findOne({ name: req.body.auteur });
   const foundEditeur = await Editeur.findOne({ name: req.body.editeur });
-  //const foundAnonceur = await User.findOne({ _id : req.body.annonceur });
 
   if (
     foundCategory &&
     foundEtat &&
     foundAuteur &&
-    foundEditeur &&
-    foundAnonceur
+    foundEditeur
   ) {
 
     //On construit le nouvel article en fonction des champs remplis par l'utilisateur
@@ -70,7 +68,6 @@ router.post("/publish", async (req, res) => {
         latitude: req.body.localisation.coordinates[1],
       },
       photoUrl: req.body.photoUrl,
-      //annonceur: foundAnonceur._id,
       annonceur: req.body.annonceur,
       timer: new Date(), // On initialise le timer à la date actuelle
       isDone: false,
@@ -278,6 +275,17 @@ router.get("/mes-publications/:userId", (req, res) => {
     .catch((error) => {
       console.error("Erreur dans /mes-publications :", error);
       res.status(500).json({ success: false, message: "Erreur serveur" });
+    });
+});
+
+router.get("/findVendorArticles/:userId", (req, res) => {
+  Article.find({ annonceur: new ObjectId(req.params.userId)})
+    .populate("categorie etat auteur editeur annonceur acheteur")
+    .then((articles) => {
+      res.json({ result: true, articles });
+    })
+    .catch(() => {
+      res.json({ result: false, error: "Erreur serveur." });
     });
 });
 
