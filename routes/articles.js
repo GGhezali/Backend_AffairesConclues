@@ -296,23 +296,28 @@ router.post("/searchByTri", (req, res) => {
 });
 
 // Route pour rechercher un article selon le titre ou l'auteur
-router.post("/search", (req, res) => {
+router.post("/search", async (req, res) => {
   const { title, author } = req.body;
+  try {
+    // Récupérer tous les articles avec les champs peuplés
+    const articles = await Article.find()
+      .populate("categorie etat auteur editeur annonceur acheteur");
 
-  Article.find({
-    $or: [
-      { titre: { $regex: title, $options: "i" } }, // Recherche par titre
-      { "auteur.name": { $regex: author, $options: "i" } }, // Recherche par auteur
-    ],
-  })
-    .populate('auteur')
-    .populate("categorie etat auteur editeur annonceur acheteur")
-    .then((data) => {
-      res.json({ success: true, data });
-    })
-    .catch((error) => {
-      res.status(500).json({ success: false, message: "Erreur lors de la recherche" });
+    const filteredArticles = articles.filter((article) => {
+      const matchesTitle = title
+        ? article.titre.toLowerCase().includes(title.toLowerCase())
+        : true;
+      const matchesAuthor = author
+        ? article.auteur && article.auteur.name.toLowerCase().includes(author.toLowerCase())
+        : true;
+
+      return matchesTitle || matchesAuthor;
     });
+
+    res.json({ success: true, data: filteredArticles });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Erreur lors de la recherche" });
+  }
 });
 
 // Route pour uploader une photo sur Cloudinary
