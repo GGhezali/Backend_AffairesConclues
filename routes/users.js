@@ -126,20 +126,20 @@ router.post("/findUserByToken", (req, res) => {
     });
 });
 
-router.put("/updateInfo/:token", async (req, res) => {
+router.put("/updateInfo/:userId", async (req, res) => {
   try {
     //On construit un objet avec les données de la requête
-    const { token } = req.params;
+    const { userId } = req.params;
     const { email, username, telephone, donneeBancaire } = req.body;
 
 // Validation de l'email
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-if (email && !emailRegex.test(email)) {
+if (!email || !emailRegex.test(email)) {
   return res.json({ result: false, error: "Email invalide" });
 }
 
-// Vérifie si l'utilisateur existe avec le token fourni
-const user = await User.findOne({ token });
+// Vérifie si l'utilisateur existe avec le userId fourni
+const user = await User.findOne({ _id: new ObjectId(userId) });
 if (!user) {
   return res.json({ result: false, error: "Utilisateur introuvable" });
 }
@@ -151,15 +151,52 @@ if (email && email !== user.email) {
     return res.json({ result: false, error: "E-mail déjà utilisé" });
   }
 }
+if (username.length < 6) {
+  return res.json({
+    result: false,
+    error: "Le nom d'utilisateur doit avoir au moins 6 caractères.",
+  });
+}
+
+// On verifie si le mot de passe contient au moin 8 CARACTERES
+if (password.length < 8)
+  return res.json({
+    result: false,
+    error: "Le mot de passe doit avoir au moins 8 caractères.",
+  });
+
+// On vérifie si le mot de passe contient au moins une minuscule
+if (!/[A-Z]/.test(password))
+  return res.json({
+    result: false,
+    error: "Le mot de passe doit contenir au moins une majuscule.",
+  });
+
+// On vérifie si le mot de passe contient au moins un chiffre
+if (!/\d/.test(password))
+  return res.json({
+    result: false,
+    error: "Le mot de passe doit contenir au moins un chiffre.",
+  });
+
+// On vérifie si le mot de passe contient au moins un caractère spécial
+if (!/[^a-zA-Z0-9]/.test(password))
+  return res.json({
+    result: false,
+    error: "Le mot de passe doit contenir au moins un caractère spécial.",
+  });
+
+  const hash = bcrypt.hashSync(password, 10);
 
 // Mise à jour des informations
 const updatedUser = await User.updateOne(
-  { token },
+  { _id: new ObjectId(userId) },
   {
-    email: email || user.email,
-    username: username || user.username,
-    telephone: telephone || user.telephone,
-    donneeBancaire: donneeBancaire || user.donneeBancaire,
+    email: email,
+    username: username,
+    password: hash,
+    telephone: telephone,
+    donneeBancaire: donneeBancaire,
   }
 );
 //On verifie si la mise à jour a réussi
@@ -177,7 +214,5 @@ else {
     res.json({ result: false, error: "Erreur serveur: " + error.message });
   }
 });
-// Vérifie si la mise à jour a réussi
-// Vérifie si la mise à jour a réussi
 
 module.exports = router;
