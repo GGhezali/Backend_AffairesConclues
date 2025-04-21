@@ -99,7 +99,7 @@ router.post("/sign-in", (req, res) => {
       // Si l'utilisateur existe et que le mot de passe est correct (comparé au hash)
       res.json({ result: true, token: data.token });
     } else {
-      res.json({ result: false }); // Sinon on dit que la connexion a échoué
+      res.json({ result: false, error: "Mot de passe ou email invalide" }); // Sinon on dit que la connexion a échoué
     }
   });
 });
