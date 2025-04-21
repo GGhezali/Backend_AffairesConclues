@@ -130,7 +130,7 @@ router.put("/updateInfo/:userId", async (req, res) => {
   try {
     //On construit un objet avec les données de la requête
     const { userId } = req.params;
-    const { email, username, telephone, donneeBancaire } = req.body;
+    const { email, username, telephone, donneeBancaire, password } = req.body;
 
 // Validation de l'email
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -194,7 +194,7 @@ const updatedUser = await User.updateOne(
   {
     email: email,
     username: username,
-  
+     password: hash,
     telephone: telephone,
     donneeBancaire: donneeBancaire,
   }
