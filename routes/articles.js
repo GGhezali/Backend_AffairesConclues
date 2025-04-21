@@ -20,7 +20,6 @@ router.get("/", (req, res) => {
   Article.find()
     .populate("categorie etat auteur editeur annonceur acheteur")
     .then((data) => {
-      data.sort((a, b) => b.timer.getTime() - a.timer.getTime());
       res.json({ success: true, data });
     });
 });
