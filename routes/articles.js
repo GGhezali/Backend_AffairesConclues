@@ -37,8 +37,6 @@ router.post("/updateIsDone", (req, res) => {
 // Route pour publier un nouvel article
 router.post("/publish", async (req, res) => {
 
-  console.log("photos =>", req.body.photoUrl);
-
   //On "fetch" dans les collections en BDD pour récupérer les id des champs
   const foundCategory = await Categorie.findOne({ name: req.body.categorie });
   const foundEtat = await Etat.findOne({ condition: req.body.etat });
@@ -49,7 +47,15 @@ router.post("/publish", async (req, res) => {
     foundCategory &&
     foundEtat &&
     foundAuteur &&
-    foundEditeur
+    foundEditeur &&
+    req.body.titre &&
+    req.body.description &&
+    req.body.prix &&
+    req.body.localisation.title &&
+    req.body.localisation.coordinates[0] &&
+    req.body.localisation.coordinates[1] &&
+    req.body.photoUrl &&
+    req.body.annonceur
   ) {
 
     //On construit le nouvel article en fonction des champs remplis par l'utilisateur
@@ -79,7 +85,7 @@ router.post("/publish", async (req, res) => {
       res.json({ result: true, data });
     });
   } else {
-    res.json({ result: false, error: "Missing fields" });
+    res.json({ result: false, error: "Vous devez remplir tous les champs de saisie" });
   }
 });
 
