@@ -401,4 +401,18 @@ router.get("/findVendorArticles/:userId", (req, res) => {
     });
 });
 
+//Route pour récupérer les articles en fonction de leur ID
+router.get("/findArticleById/:id", (req, res) => {
+  const id = req.params.id;
+  Article.findOne({ _id: new ObjectId(id) })
+    .populate("categorie etat auteur editeur annonceur acheteur")
+    .then((data) => {
+      console.log(data)
+      res.json({ result: true, data });
+    })
+    .catch(() => {
+      res.json({ result: false, error: "Erreur serveur." });
+    });
+});
+
 module.exports = router;

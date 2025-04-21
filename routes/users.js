@@ -249,4 +249,22 @@ router.put("/addBookmark/:userId", async (req, res) => {
   }
 });
 
+// Route pour récupérer les articles favoris d'un utilisateur
+router.get("/getBookmarks/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    // Vérifie si l'utilisateur existe avec le userId fourni
+    const user = await User.findOne({ _id: new ObjectId(userId) });
+    if (!user) {
+      return res.json({ result: false, error: "Utilisateur introuvable" });
+    }
+
+    // Récupère les articles favoris de l'utilisateur
+    const bookmarks = user.bookmark;
+    res.json({ result: true, bookmarks });
+  } catch (error) {
+    res.json({ result: false, error: "Erreur serveur: " + error.message });
+  }
+});
+
 module.exports = router;
