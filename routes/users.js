@@ -12,10 +12,10 @@ const { ObjectId } = require("mongodb");
 
 router.post("/sign-up", (req, res) => {
   // on vérifie si l'utilisateur a bien un username de 6 caractères minimum
-  if (req.body.username.length < 6) {
+  if (req.body.username.length < 5) {
     return res.json({
       result: false,
-      error: "Le nom d'utilisateur doit avoir au moins 6 caractères.",
+      error: "Le nom d'utilisateur doit avoir au moins 5 caractères.",
     });
   }
 
@@ -130,7 +130,7 @@ router.put("/updateInfo/:userId", async (req, res) => {
   try {
     //On construit un objet avec les données de la requête
     const { userId } = req.params;
-    const { email, username, telephone, donneeBancaire } = req.body;
+    const { email, username, telephone, donneeBancaire, password } = req.body;
 
 // Validation de l'email
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -151,10 +151,10 @@ if (email && email !== user.email) {
     return res.json({ result: false, error: "E-mail déjà utilisé" });
   }
 }
-if (username.length < 6) {
+if (username.length < 5) {
   return res.json({
     result: false,
-    error: "Le nom d'utilisateur doit avoir au moins 6 caractères.",
+    error: "Le nom d'utilisateur doit avoir au moins 5 caractères.",
   });
 }
 
@@ -194,7 +194,7 @@ const updatedUser = await User.updateOne(
   {
     email: email,
     username: username,
-    password: hash,
+     password: hash,
     telephone: telephone,
     donneeBancaire: donneeBancaire,
   }
