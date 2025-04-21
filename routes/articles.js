@@ -303,20 +303,22 @@ router.post("/searchByTri", (req, res) => {
 
 // Route pour rechercher un article selon le titre ou l'auteur
 router.post("/search", async (req, res) => {
-  const { title, author } = req.body;
+  const { title, author, categorie } = req.body;
   try {
+    const filter = {};
+    if (categorie && categorie !== "--All Categories--") {
+      const foundCategory = await Categorie.findOne({ name: categorie });
+      if (foundCategory) {
+        filter.categorie = foundCategory._id;
+      }
+    }
     // Récupérer tous les articles avec les champs peuplés
-    const articles = await Article.find()
+    const articles = await Article.find(filter)
       .populate("categorie etat auteur editeur annonceur acheteur");
 
     const filteredArticles = articles.filter((article) => {
-      const matchesTitle = title
-        ? article.titre.toLowerCase().includes(title.toLowerCase())
-        : true;
-      const matchesAuthor = author
-        ? article.auteur && article.auteur.name.toLowerCase().includes(author.toLowerCase())
-        : true;
-
+      const matchesTitle = title ? article.titre.toLowerCase().includes(title.toLowerCase()) : true;
+      const matchesAuthor = author ? article.auteur && article.auteur.name.toLowerCase().includes(author.toLowerCase()) : true;
       return matchesTitle || matchesAuthor;
     });
 
