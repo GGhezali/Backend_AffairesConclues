@@ -143,7 +143,7 @@ const user = await User.findOne({ _id: new ObjectId(userId) });
 if (!user) {
   return res.json({ result: false, error: "Utilisateur introuvable" });
 }
-
+//Hello
 // Vérifie si l'email est déjà utilisé par un autre utilisateur
 if (email && email !== user.email) {
   const emailExists = await User.findOne({ email });
