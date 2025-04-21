@@ -14,6 +14,7 @@ const uniqid = require("uniqid");
 const fs = require("fs");
 
 const { ObjectId } = require("mongodb");
+const e = require("express");
 
 // Route pour récupérer les articles
 router.get("/", (req, res) => {
@@ -104,12 +105,30 @@ router.post("/searchByCategorie", (req, res) => {
             res.json({ success: true, data });
           });
       });
+    } else if (categorie !== "--All Categories--" && tri === "Le plus ancien") {
+      Categorie.findOne({ name: categorie }).then((data) => {
+        Article.find({ categorie: data._id })
+          .populate("categorie etat auteur editeur annonceur acheteur")
+          .then((data) => {
+            data.sort((a, b) => a.timer.getTime() - b.timer.getTime());
+            res.json({ success: true, data });
+          });
+      });
     } else if (categorie !== "--All Categories--" && tri === "Prix croissant") {
       Categorie.findOne({ name: categorie }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
             data.sort((a, b) => a.currentPrice - b.currentPrice);
+            res.json({ success: true, data });
+          });
+      });
+    } else if (categorie !== "--All Categories--" && tri === "Prix décroissant") {
+      Categorie.findOne({ name: categorie }).then((data) => {
+        Article.find({ categorie: data._id })
+          .populate("categorie etat auteur editeur annonceur acheteur")
+          .then((data) => {
+            data.sort((a, b) => b.currentPrice - a.currentPrice);
             res.json({ success: true, data });
           });
       });
@@ -128,12 +147,30 @@ router.post("/searchByCategorie", (req, res) => {
             res.json({ success: true, data });
           });
       });
+    } else if (categorie === "--All Categories--" && tri === "Le plus ancien") {
+      Categorie.findOne({ name: categorie }).then(() => {
+        Article.find()
+          .populate("categorie etat auteur editeur annonceur acheteur")
+          .then((data) => {
+            data.sort((a, b) => a.timer.getTime() - b.timer.getTime());
+            res.json({ success: true, data });
+          });
+      });
     } else if (categorie === "--All Categories--" && tri === "Prix croissant") {
       Categorie.findOne({ name: categorie }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
             data.sort((a, b) => a.currentPrice - b.currentPrice);
+            res.json({ success: true, data });
+          });
+      });
+    } else if (categorie === "--All Categories--" && tri === "Prix décroissant") {
+      Categorie.findOne({ name: categorie }).then(() => {
+        Article.find()
+          .populate("categorie etat auteur editeur annonceur acheteur")
+          .then((data) => {
+            data.sort((a, b) => b.currentPrice - a.currentPrice);
             res.json({ success: true, data });
           });
       });
@@ -157,11 +194,25 @@ router.post("/searchByTri", (req, res) => {
           data.sort((a, b) => b.timer.getTime() - a.timer.getTime());
           res.json({ success: true, data });
         });
+    } else if (!categorie && tri === "Le plus ancien") {
+      Article.find()
+        .populate("categorie etat auteur editeur annonceur acheteur")
+        .then((data) => {
+          data.sort((a, b) => a.timer.getTime() - b.timer.getTime());
+          res.json({ success: true, data });
+        });
     } else if (!categorie && tri === "Prix croissant") {
       Article.find()
         .populate("categorie etat auteur editeur annonceur acheteur")
         .then((data) => {
           data.sort((a, b) => a.currentPrice - b.currentPrice);
+          res.json({ success: true, data });
+        });
+    } else if (!categorie && tri === "Prix décroissant") {
+      Article.find()
+        .populate("categorie etat auteur editeur annonceur acheteur")
+        .then((data) => {
+          data.sort((a, b) => b.currentPrice - a.currentPrice);
           res.json({ success: true, data });
         });
     } else if (categorie !== "--All Categories--" && tri === "Le plus récent") {
@@ -170,6 +221,15 @@ router.post("/searchByTri", (req, res) => {
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
             data.sort((a, b) => b.timer.getTime() - a.timer.getTime());
+            res.json({ success: true, data });
+          });
+      });
+    } else if (categorie !== "--All Categories--" && tri === "Le plus ancien") {
+      Categorie.findOne({ name: categorie }).then((data) => {
+        Article.find({ categorie: data._id })
+          .populate("categorie etat auteur editeur annonceur acheteur")
+          .then((data) => {
+            data.sort((a, b) => a.timer.getTime() - b.timer.getTime());
             res.json({ success: true, data });
           });
       });
@@ -182,6 +242,15 @@ router.post("/searchByTri", (req, res) => {
             res.json({ success: true, data });
           });
       });
+    } else if (categorie !== "--All Categories--" && tri === "Prix décroissant") {
+      Categorie.findOne({ name: categorie }).then((data) => {
+        Article.find({ categorie: data._id })
+          .populate("categorie etat auteur editeur annonceur acheteur")
+          .then((data) => {
+            data.sort((a, b) => b.currentPrice - a.currentPrice);
+            res.json({ success: true, data });
+          });
+      });
     } else if (categorie === "--All Categories--" && tri === "Le plus récent") {
       Categorie.findOne({ name: categorie }).then(() => {
         Article.find()
@@ -191,12 +260,30 @@ router.post("/searchByTri", (req, res) => {
             res.json({ success: true, data });
           });
       });
+    } else if (categorie === "--All Categories--" && tri === "Le plus ancien") {
+      Categorie.findOne({ name: categorie }).then(() => {
+        Article.find()
+          .populate("categorie etat auteur editeur annonceur acheteur")
+          .then((data) => {
+            data.sort((a, b) => a.timer.getTime() - b.timer.getTime());
+            res.json({ success: true, data });
+          });
+      });
     } else if (categorie === "--All Categories--" && tri === "Prix croissant") {
       Categorie.findOne({ name: categorie }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
             data.sort((a, b) => a.currentPrice - b.currentPrice);
+            res.json({ success: true, data });
+          });
+      });
+    } else if (categorie === "--All Categories--" && tri === "Prix décroissant") {
+      Categorie.findOne({ name: categorie }).then(() => {
+        Article.find()
+          .populate("categorie etat auteur editeur annonceur acheteur")
+          .then((data) => {
+            data.sort((a, b) => b.currentPrice - a.currentPrice);
             res.json({ success: true, data });
           });
       });
@@ -217,7 +304,7 @@ router.post("/uploadPhoto", async (req, res) => {
     const resultCloudinary = await cloudinary.uploader.upload(photoPath);
     fs.unlinkSync(photoPath);
     console.log(resultCloudinary.secure_url);
-    
+
     res.json({ result: true, url: resultCloudinary.secure_url });
   } else {
     res.json({ result: false, error: resultMove });
@@ -238,22 +325,22 @@ router.put("/updateCurrentPrice", (req, res) => {
         return res.status(400).json({ message: "Veuillez vous connecter pour enchérir" });
       }
 
-        // Si l'acheteur est trouvé, on continue avec la mise à jour du prix
-        Article.findOne({ _id: id })
-          .then((data) => {
-            if (!newPrice) {
-              return res.status(400).json({ message: "Veuillez entrer un prix" });
-            } if (data.currentPrice + 0.49 >= newPrice) {
-              return res.status(400).json({ message: "Le prix actuel doit respecter la mise minimale" });
-            } else {
-              Article.updateOne({ _id: id }, { currentPrice: newPrice, $push: {acheteur: newBuyer} })
-                .then(() => {
-                  Article.findOne({ _id: id })
-                    .then((data) => res.json({ data, message: "Prix mis à jour avec succès" }));
+      // Si l'acheteur est trouvé, on continue avec la mise à jour du prix
+      Article.findOne({ _id: id })
+        .then((data) => {
+          if (!newPrice) {
+            return res.status(400).json({ message: "Veuillez entrer un prix" });
+          } if (data.currentPrice + 0.49 >= newPrice) {
+            return res.status(400).json({ message: "Le prix actuel doit respecter la mise minimale" });
+          } else {
+            Article.updateOne({ _id: id }, { currentPrice: newPrice, $push: { acheteur: newBuyer } })
+              .then(() => {
+                Article.findOne({ _id: id })
+                  .then((data) => res.json({ data, message: "Prix mis à jour avec succès" }));
               });
-            }
-          });
-      });
+          }
+        });
+    });
   } catch (error) {
     res.status(500).json({ message: "Erreur lors de la mise à jour du prix" });
   }
@@ -278,7 +365,7 @@ router.get("/mes-publications/:userId", (req, res) => {
 });
 
 router.get("/findVendorArticles/:userId", (req, res) => {
-  Article.find({ annonceur: new ObjectId(req.params.userId)})
+  Article.find({ annonceur: new ObjectId(req.params.userId) })
     .populate("categorie etat auteur editeur annonceur acheteur")
     .then((articles) => {
       res.json({ result: true, articles });
