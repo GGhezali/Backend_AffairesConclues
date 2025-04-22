@@ -20,7 +20,7 @@ it('GET /categories', async () => {
 // Si le token correspond à un utilisateur valide
 it('POST /findUserByToken', async () => {
     const res = await request(app).post('/users/findUserByToken').send({ 
-        token: 'L9-txkgaUIwB0NDYVzWJ3Vm7es9pGntt',
+        token: '7O9miYYjQkK7rMZDcgwxD86W6wuC00ck',
     });
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({
@@ -30,8 +30,8 @@ it('POST /findUserByToken', async () => {
             username: expect.any(String),
             token: expect.any(String),
             password: expect.any(String),
-            donneeBancaire: null,
-            telephone: null,
+            donneeBancaire: expect.any(String),
+            telephone: expect.any(Number),
             bookmark: expect.any(Array),
             __v: expect.any(Number),
         },
