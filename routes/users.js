@@ -218,11 +218,10 @@ router.put("/updateInfo/:userId", async (req, res) => {
 });
 
 // Route pour ajouter un article aux favoris
-router.put("/addBookmark/:userId", async (req, res) => {
+router.put("/updateBookmark/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
     const { articleId } = req.body;
-    console.log(userId, articleId);
 
     // Vérifie si l'utilisateur existe avec le userId fourni
     const user = await User.findOne({ _id: new ObjectId(userId) });
@@ -230,7 +229,8 @@ router.put("/addBookmark/:userId", async (req, res) => {
       return res.json({ result: false, error: "Utilisateur introuvable" });
     }
 
-    // Ajoute l'article aux favoris de l'utilisateur si il n'est pas déjà présent sinon on l'enlève
+    // Vérifie si l'article est déjà dans les favoris
+    // Si l'article est déjà dans les favoris, on l'enlève
     const isBookmarked = user.bookmark.includes(articleId);
     if (isBookmarked) {
       await User.updateOne(
