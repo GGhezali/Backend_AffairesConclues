@@ -36,12 +36,13 @@ router.post("/updateIsDone", (req, res) => {
 
 // Route pour publier un nouvel article
 router.post("/publish", async (req, res) => {
-
   //On "fetch" dans les collections en BDD pour récupérer les id des champs
   const foundCategory = await Categorie.findOne({ name: req.body.categorie });
   const foundEtat = await Etat.findOne({ condition: req.body.etat });
   const foundAuteur = await Auteur.findOne({ name: req.body.auteur });
   const foundEditeur = await Editeur.findOne({ name: req.body.editeur });
+
+  console.log(foundCategory);
 
   if (
     foundCategory &&
@@ -54,10 +55,9 @@ router.post("/publish", async (req, res) => {
     req.body.localisation.title &&
     req.body.localisation.coordinates[0] &&
     req.body.localisation.coordinates[1] &&
-    req.body.photoUrl &&
+    req.body.photoUrl.length > 1 &&
     req.body.annonceur
   ) {
-
     //On construit le nouvel article en fonction des champs remplis par l'utilisateur
     const newArticle = new Article({
       titre: req.body.titre,
@@ -79,13 +79,14 @@ router.post("/publish", async (req, res) => {
       isDone: false,
     });
 
-    // On sauvegarde l'article' dans la base de données
-    newArticle.save().then((data) => {
-      // On renvoie un succès et on affiche l'article poster dans le backend
-      res.json({ result: true, data });
-    });
+    await newArticle.save();
+    res.json({ result: true, data });
   } else {
-    res.json({ result: false, error: "Vous devez remplir tous les champs de saisie" });
+    res.json({
+      result: false,
+      error:
+        "Vous devez prendre une photo et remplir tous les champs de saisie",
+    });
   }
 });
 
@@ -129,7 +130,10 @@ router.post("/searchByCategorie", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie !== "--All Categories--" && tri === "Prix décroissant") {
+    } else if (
+      categorie !== "--All Categories--" &&
+      tri === "Prix décroissant"
+    ) {
       Categorie.findOne({ name: categorie }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
@@ -171,7 +175,10 @@ router.post("/searchByCategorie", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie === "--All Categories--" && tri === "Prix décroissant") {
+    } else if (
+      categorie === "--All Categories--" &&
+      tri === "Prix décroissant"
+    ) {
       Categorie.findOne({ name: categorie }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
@@ -248,7 +255,10 @@ router.post("/searchByTri", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie !== "--All Categories--" && tri === "Prix décroissant") {
+    } else if (
+      categorie !== "--All Categories--" &&
+      tri === "Prix décroissant"
+    ) {
       Categorie.findOne({ name: categorie }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
@@ -284,7 +294,10 @@ router.post("/searchByTri", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie === "--All Categories--" && tri === "Prix décroissant") {
+    } else if (
+      categorie === "--All Categories--" &&
+      tri === "Prix décroissant"
+    ) {
       Categorie.findOne({ name: categorie }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
@@ -313,18 +326,26 @@ router.post("/search", async (req, res) => {
       }
     }
     // Récupérer tous les articles avec les champs peuplés
-    const articles = await Article.find(filter)
-      .populate("categorie etat auteur editeur annonceur acheteur");
+    const articles = await Article.find(filter).populate(
+      "categorie etat auteur editeur annonceur acheteur"
+    );
 
     const filteredArticles = articles.filter((article) => {
-      const matchesTitle = title ? article.titre.toLowerCase().includes(title.toLowerCase()) : true;
-      const matchesAuthor = author ? article.auteur && article.auteur.name.toLowerCase().includes(author.toLowerCase()) : true;
+      const matchesTitle = title
+        ? article.titre.toLowerCase().includes(title.toLowerCase())
+        : true;
+      const matchesAuthor = author
+        ? article.auteur &&
+          article.auteur.name.toLowerCase().includes(author.toLowerCase())
+        : true;
       return matchesTitle || matchesAuthor;
     });
 
     res.json({ success: true, data: filteredArticles });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Erreur lors de la recherche" });
+    res
+      .status(500)
+      .json({ success: false, message: "Erreur lors de la recherche" });
   }
 });
 
@@ -355,24 +376,31 @@ router.put("/updateCurrentPrice", (req, res) => {
 
     User.findOne({ _id: newBuyer }).then((data) => {
       if (!data || newBuyer === null) {
-        return res.status(400).json({ message: "Veuillez vous connecter pour enchérir" });
+        return res
+          .status(400)
+          .json({ message: "Veuillez vous connecter pour enchérir" });
       }
 
       // Si l'acheteur est trouvé, on continue avec la mise à jour du prix
-      Article.findOne({ _id: id })
-        .then((data) => {
-          if (!newPrice) {
-            return res.status(400).json({ message: "Veuillez entrer un prix" });
-          } if (data.currentPrice + 0.49 >= newPrice) {
-            return res.status(400).json({ message: "Le prix actuel doit respecter la mise minimale" });
-          } else {
-            Article.updateOne({ _id: id }, { currentPrice: newPrice, $push: { acheteur: newBuyer } })
-              .then(() => {
-                Article.findOne({ _id: id })
-                  .then((data) => res.json({ data, message: "Prix mis à jour avec succès" }));
-              });
-          }
-        });
+      Article.findOne({ _id: id }).then((data) => {
+        if (!newPrice) {
+          return res.status(400).json({ message: "Veuillez entrer un prix" });
+        }
+        if (data.currentPrice + 0.49 >= newPrice) {
+          return res.status(400).json({
+            message: "Le prix actuel doit respecter la mise minimale",
+          });
+        } else {
+          Article.updateOne(
+            { _id: id },
+            { currentPrice: newPrice, $push: { acheteur: newBuyer } }
+          ).then(() => {
+            Article.findOne({ _id: id }).then((data) =>
+              res.json({ data, message: "Prix mis à jour avec succès" })
+            );
+          });
+        }
+      });
     });
   } catch (error) {
     res.status(500).json({ message: "Erreur lors de la mise à jour du prix" });
@@ -414,7 +442,7 @@ router.get("/findArticleById/:id", (req, res) => {
   Article.findOne({ _id: new ObjectId(id) })
     .populate("categorie etat auteur editeur annonceur acheteur")
     .then((data) => {
-      console.log(data)
+      console.log(data);
       res.json({ result: true, data });
     })
     .catch(() => {
