@@ -132,84 +132,85 @@ router.put("/updateInfo/:userId", async (req, res) => {
     const { userId } = req.params;
     const { email, username, telephone, donneeBancaire, password } = req.body;
 
-// Validation de l'email
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-if (!email || !emailRegex.test(email)) {
-  return res.json({ result: false, error: "Email invalide" });
-}
+    // Validation de l'email
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!email || !emailRegex.test(email)) {
+      return res.json({ result: false, error: "Email invalide" });
+    }
 
-// Vérifie si l'utilisateur existe avec le userId fourni
-const user = await User.findOne({ _id: new ObjectId(userId) });
-if (!user) {
-  return res.json({ result: false, error: "Utilisateur introuvable" });
-}
-//Hello
-// Vérifie si l'email est déjà utilisé par un autre utilisateur
-if (email && email !== user.email) {
-  const emailExists = await User.findOne({ email });
-  if (emailExists) {
-    return res.json({ result: false, error: "E-mail déjà utilisé" });
-  }
-}
-if (username.length < 5) {
-  return res.json({
-    result: false,
-    error: "Le nom d'utilisateur doit avoir au moins 5 caractères.",
-  });
-}
+    // Vérifie si l'utilisateur existe avec le userId fourni
+    const user = await User.findOne({ _id: new ObjectId(userId) });
+    if (!user) {
+      return res.json({ result: false, error: "Utilisateur introuvable" });
+    }
+    //Hello
+    // Vérifie si l'email est déjà utilisé par un autre utilisateur
+    if (email && email !== user.email) {
+      const emailExists = await User.findOne({ email });
+      if (emailExists) {
+        return res.json({ result: false, error: "E-mail déjà utilisé" });
+      }
+    }
+    if (username.length < 5) {
+      return res.json({
+        result: false,
+        error: "Le nom d'utilisateur doit avoir au moins 5 caractères.",
+      });
+    }
+    if (password.length > 0) {
+      // On verifie si le mot de passe contient au moin 8 CARACTERES
+      if (password.length < 8)
+        return res.json({
+          result: false,
+          error: "Le mot de passe doit avoir au moins 8 caractères.",
+        });
 
-// On verifie si le mot de passe contient au moin 8 CARACTERES
-if (password.length < 8)
-  return res.json({
-    result: false,
-    error: "Le mot de passe doit avoir au moins 8 caractères.",
-  });
+      // On vérifie si le mot de passe contient au moins une minuscule
+      if (!/[A-Z]/.test(password))
+        return res.json({
+          result: false,
+          error: "Le mot de passe doit contenir au moins une majuscule.",
+        });
 
-// On vérifie si le mot de passe contient au moins une minuscule
-if (!/[A-Z]/.test(password))
-  return res.json({
-    result: false,
-    error: "Le mot de passe doit contenir au moins une majuscule.",
-  });
+      // On vérifie si le mot de passe contient au moins un chiffre
+      if (!/\d/.test(password))
+        return res.json({
+          result: false,
+          error: "Le mot de passe doit contenir au moins un chiffre.",
+        });
 
-// On vérifie si le mot de passe contient au moins un chiffre
-if (!/\d/.test(password))
-  return res.json({
-    result: false,
-    error: "Le mot de passe doit contenir au moins un chiffre.",
-  });
+      // On vérifie si le mot de passe contient au moins un caractère spécial
+      if (!/[^a-zA-Z0-9]/.test(password))
+        return res.json({
+          result: false,
+          error: "Le mot de passe doit contenir au moins un caractère spécial.",
+        });
+    }
 
-// On vérifie si le mot de passe contient au moins un caractère spécial
-if (!/[^a-zA-Z0-9]/.test(password))
-  return res.json({
-    result: false,
-    error: "Le mot de passe doit contenir au moins un caractère spécial.",
-  });
+    const hash = bcrypt.hashSync(password, 10);
 
-  const hash = bcrypt.hashSync(password, 10);
-
-// Mise à jour des informations
-const updatedUser = await User.updateOne(
-  { _id: new ObjectId(userId) },
-  {
-    email: email,
-    username: username,
-     password: hash,
-    telephone: telephone,
-    donneeBancaire: donneeBancaire,
-  }
-);
-//On verifie si la mise à jour a réussi
-if (updatedUser.modifiedCount > 0) {
-  return res.json({ result: true, message: "Mise à jour réussie." });
-} 
-//On verifie si l'utilisateur a modifié ses informations
-else {
-  return res.json({
-    result: false,
-    error: "Aucune modification effectuée.",
-  });
-}
+    // Mise à jour des informations
+    const updatedUser = await User.updateOne(
+      { _id: new ObjectId(userId) },
+      {
+        email: email,
+        username: username,
+        password: hash,
+        telephone: telephone,
+        donneeBancaire: donneeBancaire,
+      }
+    );
+    //On verifie si la mise à jour a réussi
+    if (updatedUser.modifiedCount > 0) {
+      return res.json({ result: true, message: "Mise à jour réussie." });
+    }
+    //On verifie si l'utilisateur a modifié ses informations
+    else {
+      return res.json({
+        result: false,
+        error: "Aucune modification effectuée.",
+      });
+    }
   } catch (error) {
     res.json({ result: false, error: "Erreur serveur: " + error.message });
   }
@@ -220,7 +221,7 @@ router.put("/addBookmark/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
     const { articleId } = req.body;
-    console.log(userId, articleId)
+    console.log(userId, articleId);
 
     // Vérifie si l'utilisateur existe avec le userId fourni
     const user = await User.findOne({ _id: new ObjectId(userId) });
@@ -233,14 +234,14 @@ router.put("/addBookmark/:userId", async (req, res) => {
     if (isBookmarked) {
       await User.updateOne(
         { _id: new ObjectId(userId) },
-        { $pull: {bookmark: articleId } }
+        { $pull: { bookmark: articleId } }
       );
       return res.json({ result: true, message: "Article retiré des favoris." });
     }
     // Si l'article n'est pas déjà dans les favoris, on l'ajoute
     await User.updateOne(
       { _id: new ObjectId(userId) },
-      { $push: {bookmark: articleId } }
+      { $push: { bookmark: articleId } }
     );
 
     res.json({ result: true, message: "Article ajouté aux favoris." });
