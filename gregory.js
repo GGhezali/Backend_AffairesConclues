@@ -16,18 +16,18 @@ const app = require("./app");
  * and verifies the response status code and body structure.
  */
 it("POST /findUserIdByToken", async () => {
-    const res = await request(app).post("/users/findUserIdByToken").send({
-        token: "mdw0XTEk4s7w-3Ad6ksjHRUvUbXyW4LV",
-    });
-    
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual({
-        result: true,
-        userId: expect.any(String), // Vérifie que `userId` est une chaîne de caractères
-    });
+  const res = await request(app).post("/users/findUserIdByToken").send({
+    token: "mdw0XTEk4s7w-3Ad6ksjHRUvUbXyW4LV",
+  });
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body).toEqual({
+    result: true,
+    userId: expect.any(String), // Vérifie que `userId` est une chaîne de caractères
+  });
 });
 
-/** 
+/** or :
 describe('POST /findUserIdByToken', () => {
   it('should return userId when a valid token is provided', async () => {
     const res = await request(app).post('/findUserIdByToken').send({
@@ -41,3 +41,15 @@ describe('POST /findUserIdByToken', () => {
     });
   });
 */
+
+it("POST /findUserIdByToken", async () => {
+  const res = await request(app).post("/users/findUserIdByToken").send({
+    token: "invalid_token",
+  });
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body).toEqual({
+    result: false,
+    error: "Erreur serveur.",
+  });
+});
