@@ -16,7 +16,7 @@ const app = require("./app");
  * and verifies the response status code and body structure.
  */
 it("POST /findUserIdByToken", async () => {
-    const res = await request(app).post("/findUserIdByToken").send({
+    const res = await request(app).post("/users/findUserIdByToken").send({
         token: "mdw0XTEk4s7w-3Ad6ksjHRUvUbXyW4LV",
     });
     

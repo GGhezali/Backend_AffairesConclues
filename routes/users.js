@@ -32,7 +32,8 @@ router.post("/sign-up", (req, res) => {
       error: "Le mot de passe doit avoir au moins 8 caractères.",
     });
 
-  // On vérifie si le mot de passe contient au moins une minuscule
+  // On vérifie si le mot de passe contient au moins une majuscule
+
   if (!/[A-Z]/.test(req.body.password))
     return res.json({
       result: false,
@@ -80,7 +81,7 @@ router.post("/sign-up", (req, res) => {
   // On sauvegarde le nouvel utilisateur dans la base de données
   newUser.save().then(() => {
     // On renvoie une validation et le token au frontend
-    res.json({ result: true, token: token });
+    return res.json({ result: true, token: token });
   });
 });
 
