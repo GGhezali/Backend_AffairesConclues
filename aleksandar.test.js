@@ -18,9 +18,9 @@ it('GET /categories', async () => {
 // et vérifie le code de statut de la réponse et la structure du corps de la réponse
 
 // Si le token correspond à un utilisateur valide
-it('POST /findUserByToken', async () => {
+it('POST /findUserByExistingToken', async () => {
     const res = await request(app).post('/users/findUserByToken').send({ 
-        token: '7O9miYYjQkK7rMZDcgwxD86W6wuC00ck',
+        token: '4-8oYfyFIBRXStqg-q8hnW9JuduzzLAd',
     });
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({
@@ -40,7 +40,7 @@ it('POST /findUserByToken', async () => {
 });
 
 // Si le token ne correspond pas à un utilisateur valide
-it('POST /findUserByToken', async () => {
+it('POST /findUserByRandomToken', async () => {
     const res = await request(app).post('/users/findUserByToken').send({ 
         token: 'RandomToken',
     });
