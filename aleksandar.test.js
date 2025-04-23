@@ -31,7 +31,7 @@ it('POST /findUserByExistingToken', async () => {
             token: expect.any(String),
             password: expect.any(String),
             donneeBancaire: expect.any(String),
-            telephone: expect.any(Number),
+            telephone: expect.any(String),
             bookmark: expect.any(Array),
             __v: expect.any(Number),
         },
