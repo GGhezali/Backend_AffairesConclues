@@ -443,4 +443,16 @@ router.get("/findArticleById/:id", (req, res) => {
     });
 });
 
+//Route pour supprimer un article en fonction de son ID
+router.delete("/deleteArticle/:id", (req, res) => {
+  const id = req.params.id;
+  Article.deleteOne({ _id: new ObjectId(id) })
+    .then(() => {
+      res.json({ result: true });
+    })
+    .catch(() => {
+      res.json({ result: false, error: "Erreur serveur." });
+    });
+});
+
 module.exports = router;
