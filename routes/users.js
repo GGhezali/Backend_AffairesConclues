@@ -10,6 +10,8 @@ const bcrypt = require("bcrypt");
 const User = require("../models/users");
 const { ObjectId } = require("mongodb");
 
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route POST appelée quand l'utilisateur clique sur "s'inscrire" pour créer un compte
 router.post("/sign-up", (req, res) => {
   // on vérifie si l'utilisateur a bien un username de 6 caractères minimum
   if (req.body.username.length < 5) {
@@ -85,7 +87,10 @@ router.post("/sign-up", (req, res) => {
   });
 });
 
-// rout POST Quand l'utilisateur clique sur "se connecter", il envoie ses infos ici
+//-------------------------------------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route GET appelée quand l'utilisateur clique sur "se connecter" pour récupérer les informations d'un utilisateur
 router.post("/sign-in", (req, res) => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   // On vérifie si l'email est valide
@@ -104,7 +109,10 @@ router.post("/sign-in", (req, res) => {
     }
   });
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route POST appelée pour récupérer l'Id de l'utilisateur à partir du token
 router.post("/findUserIdByToken", (req, res) => {
   const { token } = req.body;
   User.findOne({ token: token })
@@ -116,6 +124,10 @@ router.post("/findUserIdByToken", (req, res) => {
     });
 });
 
+//-------------------------------------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route POST appelée pour récupérer les informations de l'utilisateur à partir du token
 router.post("/findUserByToken", (req, res) => {
   const { token } = req.body;
   User.findOne({ token: token })
@@ -126,7 +138,10 @@ router.post("/findUserByToken", (req, res) => {
       res.json({ result: false, error: "Erreur serveur." });
     });
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route PUT appelée pour mettre à jour les informations de l'utilisateur
 router.put("/updateInfo/:userId", async (req, res) => {
   try {
     //On construit un objet avec les données de la requête
@@ -216,8 +231,10 @@ router.put("/updateInfo/:userId", async (req, res) => {
     res.json({ result: false, error: "Erreur serveur: " + error.message });
   }
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
-// Route pour ajouter un article aux favoris
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route PUT appelée pour mettre à jour la liste des articles favoris de l'utilisateur
 router.put("/updateBookmark/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
@@ -250,7 +267,9 @@ router.put("/updateBookmark/:userId", async (req, res) => {
     res.json({ result: false, error: "Erreur serveur: " + error.message });
   }
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------------------------------------
 // Route pour récupérer les articles favoris d'un utilisateur
 router.get("/getBookmarks/:userId", async (req, res) => {
   try {
@@ -268,5 +287,29 @@ router.get("/getBookmarks/:userId", async (req, res) => {
     res.json({ result: false, error: "Erreur serveur: " + error.message });
   }
 });
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route GET pour récupérer les données d'un utilisateur à partir de son ID
+router.get("/getUserById/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    // Vérifie si l'utilisateur existe avec le userId fourni
+    const user = await User.findOne({ _id: new ObjectId(userId) });
+    if (!user) {
+      return res.json({ result: false, error: "Utilisateur introuvable" });
+    }
+    // Récupère les données de l'utilisateur
+    const userData = {
+      email: user.email,
+      username: user.username,
+      donneeBancaire: user.donneeBancaire,
+      telephone: user.telephone,
+      bookmark: user.bookmark,
+    };
+    res.json({ result: true, userData });
+  } catch (error) {
+    res.json({ result: false, error: "Erreur serveur: " + error.message });
+  }
+});
+//-------------------------------------------------------------------------------------------------------------------------------
 
 module.exports = router;

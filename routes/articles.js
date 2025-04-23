@@ -42,17 +42,6 @@ router.post("/publish", async (req, res) => {
   const foundAuteur = await Auteur.findOne({ name: req.body.auteur });
   const foundEditeur = await Editeur.findOne({ name: req.body.editeur });
 
-  console.log("categorie", foundCategory);
-  console.log("etat",foundEtat);
-  console.log("auteur", foundAuteur);
-  console.log("editeur", foundEditeur);
-  console.log("titre", req.body.titre);
-  console.log("description", req.body.description);
-  console.log("prix", req.body.prix);
-  console.log("localisation", req.body.localisation); 
-  console.log("url length", req.body.photoUrl.length); // Longueur de l'URL de la photo
-  console.log("annonceur", req.body.annonceur); // Annonceur
-
   if (
     foundCategory &&
     foundEtat &&
