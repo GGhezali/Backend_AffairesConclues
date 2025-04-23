@@ -42,7 +42,16 @@ router.post("/publish", async (req, res) => {
   const foundAuteur = await Auteur.findOne({ name: req.body.auteur });
   const foundEditeur = await Editeur.findOne({ name: req.body.editeur });
 
-  console.log(foundCategory);
+  console.log("categorie", foundCategory);
+  console.log("etat",foundEtat);
+  console.log("auteur", foundAuteur);
+  console.log("editeur", foundEditeur);
+  console.log("titre", req.body.titre);
+  console.log("description", req.body.description);
+  console.log("prix", req.body.prix);
+  console.log("localisation", req.body.localisation); 
+  console.log("url length", req.body.photoUrl.length); // Longueur de l'URL de la photo
+  console.log("annonceur", req.body.annonceur); // Annonceur
 
   if (
     foundCategory &&
@@ -55,7 +64,7 @@ router.post("/publish", async (req, res) => {
     req.body.localisation.title &&
     req.body.localisation.coordinates[0] &&
     req.body.localisation.coordinates[1] &&
-    req.body.photoUrl.length > 1 &&
+    req.body.photoUrl.length > 0 &&
     req.body.annonceur
   ) {
     //On construit le nouvel article en fonction des champs remplis par l'utilisateur
@@ -79,7 +88,7 @@ router.post("/publish", async (req, res) => {
       isDone: false,
     });
 
-    await newArticle.save();
+    const data = await newArticle.save();
     res.json({ result: true, data });
   } else {
     res.json({
