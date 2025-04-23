@@ -89,20 +89,20 @@ router.post("/publish", async (req, res) => {
 });
 
 // Route pour récupérer un article en fonction de sa catégorie ou de son tri
-router.post("/searchByCategorie", (req, res) => {
+router.post("/searchByCategory", (req, res) => {
   try {
-    const { categorie, sort } = req.body;
+    const { category, sort } = req.body;
 
-    if (categorie !== "--All Categories--" && !sort) {
-      Categorie.findOne({ name: categorie }).then((data) => {
+    if (category !== "--All Categories--" && !sort) {
+      Categorie.findOne({ name: category }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie !== "--All Categories--" && sort === "Le plus récent") {
-      Categorie.findOne({ name: categorie }).then((data) => {
+    } else if (category !== "--All Categories--" && sort === "Le plus récent") {
+      Categorie.findOne({ name: category }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -110,8 +110,8 @@ router.post("/searchByCategorie", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie !== "--All Categories--" && sort === "Le plus ancien") {
-      Categorie.findOne({ name: categorie }).then((data) => {
+    } else if (category !== "--All Categories--" && sort === "Le plus ancien") {
+      Categorie.findOne({ name: category }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -119,8 +119,8 @@ router.post("/searchByCategorie", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie !== "--All Categories--" && sort === "Prix croissant") {
-      Categorie.findOne({ name: categorie }).then((data) => {
+    } else if (category !== "--All Categories--" && sort === "Prix croissant") {
+      Categorie.findOne({ name: category }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -129,10 +129,10 @@ router.post("/searchByCategorie", (req, res) => {
           });
       });
     } else if (
-      categorie !== "--All Categories--" &&
+      category !== "--All Categories--" &&
       sort === "Prix décroissant"
     ) {
-      Categorie.findOne({ name: categorie }).then((data) => {
+      Categorie.findOne({ name: category }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -140,14 +140,14 @@ router.post("/searchByCategorie", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie === "--All Categories--" && !sort) {
+    } else if (category === "--All Categories--" && !sort) {
       Article.find()
         .populate("categorie etat auteur editeur annonceur acheteur")
         .then((data) => {
           res.json({ success: true, data });
         });
-    } else if (categorie === "--All Categories--" && sort === "Le plus récent") {
-      Categorie.findOne({ name: categorie }).then(() => {
+    } else if (category === "--All Categories--" && sort === "Le plus récent") {
+      Categorie.findOne({ name: category }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -155,8 +155,8 @@ router.post("/searchByCategorie", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie === "--All Categories--" && sort === "Le plus ancien") {
-      Categorie.findOne({ name: categorie }).then(() => {
+    } else if (category === "--All Categories--" && sort === "Le plus ancien") {
+      Categorie.findOne({ name: category }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -164,8 +164,8 @@ router.post("/searchByCategorie", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie === "--All Categories--" && sort === "Prix croissant") {
-      Categorie.findOne({ name: categorie }).then(() => {
+    } else if (category === "--All Categories--" && sort === "Prix croissant") {
+      Categorie.findOne({ name: category }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -174,10 +174,10 @@ router.post("/searchByCategorie", (req, res) => {
           });
       });
     } else if (
-      categorie === "--All Categories--" &&
+      category === "--All Categories--" &&
       sort === "Prix décroissant"
     ) {
-      Categorie.findOne({ name: categorie }).then(() => {
+      Categorie.findOne({ name: category }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -196,38 +196,38 @@ router.post("/searchByCategorie", (req, res) => {
 // Route pour rechercher un article en fonction de son tri ou de sa catégorie
 router.post("/searchBySort", (req, res) => {
   try {
-    const { categorie, sort } = req.body;
+    const { category, sort } = req.body;
 
-    if (!categorie && sort === "Le plus récent") {
+    if (!category && sort === "Le plus récent") {
       Article.find()
         .populate("categorie etat auteur editeur annonceur acheteur")
         .then((data) => {
           data.sort((a, b) => b.timer.getTime() - a.timer.getTime());
           res.json({ success: true, data });
         });
-    } else if (!categorie && sort === "Le plus ancien") {
+    } else if (!category && sort === "Le plus ancien") {
       Article.find()
         .populate("categorie etat auteur editeur annonceur acheteur")
         .then((data) => {
           data.sort((a, b) => a.timer.getTime() - b.timer.getTime());
           res.json({ success: true, data });
         });
-    } else if (!categorie && sort === "Prix croissant") {
+    } else if (!category && sort === "Prix croissant") {
       Article.find()
         .populate("categorie etat auteur editeur annonceur acheteur")
         .then((data) => {
           data.sort((a, b) => a.currentPrice - b.currentPrice);
           res.json({ success: true, data });
         });
-    } else if (!categorie && sort === "Prix décroissant") {
+    } else if (!category && sort === "Prix décroissant") {
       Article.find()
         .populate("categorie etat auteur editeur annonceur acheteur")
         .then((data) => {
           data.sort((a, b) => b.currentPrice - a.currentPrice);
           res.json({ success: true, data });
         });
-    } else if (categorie !== "--All Categories--" && sort === "Le plus récent") {
-      Categorie.findOne({ name: categorie }).then((data) => {
+    } else if (category !== "--All Categories--" && sort === "Le plus récent") {
+      Categorie.findOne({ name: category }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -235,8 +235,8 @@ router.post("/searchBySort", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie !== "--All Categories--" && sort === "Le plus ancien") {
-      Categorie.findOne({ name: categorie }).then((data) => {
+    } else if (category !== "--All Categories--" && sort === "Le plus ancien") {
+      Categorie.findOne({ name: category }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -244,8 +244,8 @@ router.post("/searchBySort", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie !== "--All Categories--" && sort === "Prix croissant") {
-      Categorie.findOne({ name: categorie }).then((data) => {
+    } else if (category !== "--All Categories--" && sort === "Prix croissant") {
+      Categorie.findOne({ name: category }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -254,10 +254,10 @@ router.post("/searchBySort", (req, res) => {
           });
       });
     } else if (
-      categorie !== "--All Categories--" &&
+      category !== "--All Categories--" &&
       sort === "Prix décroissant"
     ) {
-      Categorie.findOne({ name: categorie }).then((data) => {
+      Categorie.findOne({ name: category }).then((data) => {
         Article.find({ categorie: data._id })
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -265,8 +265,8 @@ router.post("/searchBySort", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie === "--All Categories--" && sort === "Le plus récent") {
-      Categorie.findOne({ name: categorie }).then(() => {
+    } else if (category === "--All Categories--" && sort === "Le plus récent") {
+      Categorie.findOne({ name: category }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -274,8 +274,8 @@ router.post("/searchBySort", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie === "--All Categories--" && sort === "Le plus ancien") {
-      Categorie.findOne({ name: categorie }).then(() => {
+    } else if (category === "--All Categories--" && sort === "Le plus ancien") {
+      Categorie.findOne({ name: category }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -283,8 +283,8 @@ router.post("/searchBySort", (req, res) => {
             res.json({ success: true, data });
           });
       });
-    } else if (categorie === "--All Categories--" && sort === "Prix croissant") {
-      Categorie.findOne({ name: categorie }).then(() => {
+    } else if (category === "--All Categories--" && sort === "Prix croissant") {
+      Categorie.findOne({ name: category }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -293,10 +293,10 @@ router.post("/searchBySort", (req, res) => {
           });
       });
     } else if (
-      categorie === "--All Categories--" &&
+      category === "--All Categories--" &&
       sort === "Prix décroissant"
     ) {
-      Categorie.findOne({ name: categorie }).then(() => {
+      Categorie.findOne({ name: category }).then(() => {
         Article.find()
           .populate("categorie etat auteur editeur annonceur acheteur")
           .then((data) => {
@@ -314,11 +314,11 @@ router.post("/searchBySort", (req, res) => {
 
 // Route pour rechercher un article selon le titre ou l'auteur
 router.post("/search", async (req, res) => {
-  const { title, author, categorie } = req.body;
+  const { title, author, category } = req.body;
   try {
     const filter = {};
-    if (categorie && categorie !== "--All Categories--") {
-      const foundCategory = await Categorie.findOne({ name: categorie });
+    if (category && category !== "--All Categories--") {
+      const foundCategory = await Categorie.findOne({ name: category });
       if (foundCategory) {
         filter.categorie = foundCategory._id;
       }
@@ -373,7 +373,6 @@ router.put("/updateCurrentPrice", (req, res) => {
     const newBuyer = req.body.newBuyer || null;
 
     User.findOne({ _id: newBuyer }).then((data) => {
-
       // Si l'acheteur est trouvé, on continue avec la mise à jour du prix
       Article.findOne({ _id: id }).then((data) => {
         if (!newPrice) {
