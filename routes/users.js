@@ -143,6 +143,7 @@ router.post("/findUserByToken", (req, res) => {
 //-------------------------------------------------------------------------------------------------------------------------------
 // Route PUT appelée pour mettre à jour les informations de l'utilisateur
 router.put("/updateInfo/:userId", async (req, res) => {
+  let hash = "";
   try {
     //On construit un objet avec les données de la requête
     const { userId } = req.params;
@@ -201,9 +202,9 @@ router.put("/updateInfo/:userId", async (req, res) => {
           result: false,
           error: "Le mot de passe doit contenir au moins un caractère spécial.",
         });
+        hash = bcrypt.hashSync(password, 10);
     }
 
-    const hash = bcrypt.hashSync(password, 10);
 
     // Mise à jour des informations
     const updatedUser = await User.updateOne(
@@ -211,7 +212,8 @@ router.put("/updateInfo/:userId", async (req, res) => {
       {
         email: email,
         username: username,
-        password: hash,
+        password: hash || user.password,
+        // On ne met pas à jour le mot de passe si le champ est vide
         telephone: telephone,
         donneeBancaire: donneeBancaire,
       }
