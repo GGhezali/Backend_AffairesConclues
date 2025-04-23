@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema({
     token: { type: String, required: true },
     password: { type: String, required: true },
     donneeBancaire: { type: String, default: null },
-    telephone: { type: Number, default: null },
+    telephone: { type: String, default: null },
     bookmark: [{ type: mongoose.Schema.Types.ObjectId, ref: 'articles', default: [] }]   
 })
 
