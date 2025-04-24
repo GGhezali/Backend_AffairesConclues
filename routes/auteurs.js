@@ -7,8 +7,8 @@ const Auteurs = require("../models/auteurs"); // On importe le modèle de la BDD
 // Route pour récupérer tous les auteurs
 router.get("/", async (req, res) => {
   try {
-    const authors = await Auteurs.find(); // On cherche tous les auteurs dans la BDD
-    res.json({ authors }); // On renvoie les auteurs au frontend
+    const auteurs = await Auteurs.find(); // On cherche tous les auteurs dans la BDD
+    res.json({ auteurs }); // On renvoie les auteurs au frontend
   } catch (error) {
     res
       .status(500)
