@@ -202,9 +202,8 @@ router.put("/updateInfo/:userId", async (req, res) => {
           result: false,
           error: "Le mot de passe doit contenir au moins un caractère spécial.",
         });
-        hash = bcrypt.hashSync(password, 10);
+      hash = bcrypt.hashSync(password, 10);
     }
-
 
     // Mise à jour des informations
     const updatedUser = await User.updateOne(

@@ -7,8 +7,8 @@ const Editeurs = require("../models/editeurs"); // On importe le modèle de la B
 // Route pour récupérer tous les editeurs
 router.get("/", async (req, res) => {
   try {
-    const editors = await Editeurs.find(); // On cherche tous les editeurs dans la BDD
-    res.json({ editors }); // On renvoie les editeurs au frontend
+    const editeurs = await Editeurs.find(); // On cherche tous les editeurs dans la BDD
+    res.json({ editeurs }); // On renvoie les editeurs au frontend
   } catch (error) {
     res
       .status(500)
