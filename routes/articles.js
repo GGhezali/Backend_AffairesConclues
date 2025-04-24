@@ -1,22 +1,18 @@
-var express = require("express"); // On importe express pour créer une route
-var router = express.Router(); // On crée un objet routeur express
-
-// On importe toutes les BDD pour les utiliser ensuite
+var express = require("express");
+var router = express.Router();
 const Article = require("../models/articles");
 const Auteur = require("../models/auteurs");
 const Editeur = require("../models/editeurs");
 const Categorie = require("../models/categories");
 const Etat = require("../models/etats");
 const User = require("../models/users");
-
 const cloudinary = require("cloudinary").v2;
 const uniqid = require("uniqid");
 const fs = require("fs");
-
 const { ObjectId } = require("mongodb");
-const e = require("express");
 
-// Route pour récupérer les articles
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route GET pour récupérer tous les articles
 router.get("/", (req, res) => {
   Article.find()
     .populate("categorie etat auteur editeur annonceur acheteur")
@@ -24,8 +20,10 @@ router.get("/", (req, res) => {
       res.json({ success: true, data });
     });
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
-// Route pour updater la propriété isDone d'un article pour lequel la vente est terminée
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route POST pour mettre à jour la propriété isDone d'un article pour lequel la vente est terminée
 router.post("/updateIsDone", (req, res) => {
   const id = req.body.id;
 
@@ -33,10 +31,11 @@ router.post("/updateIsDone", (req, res) => {
     Article.findOne({ _id: id }).then((data) => res.json({ data }));
   });
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
-// Route pour publier un nouvel article
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route POST pour publier un nouvel article
 router.post("/publish", async (req, res) => {
-  //On "fetch" dans les collections en BDD pour récupérer les id des champs
   const foundCategory = await Categorie.findOne({ name: req.body.categorie });
   const foundEtat = await Etat.findOne({ condition: req.body.etat });
   const foundAuteur = await Auteur.findOne({ name: req.body.auteur });
@@ -87,8 +86,10 @@ router.post("/publish", async (req, res) => {
     });
   }
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
-// Route pour récupérer un article en fonction de sa catégorie ou de son tri
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route POST pour récupérer les articleq en fonction de leur catégorie et/ou de son paramètre de tri
 router.post("/searchByCategory", (req, res) => {
   try {
     const { category, sort } = req.body;
@@ -192,8 +193,10 @@ router.post("/searchByCategory", (req, res) => {
       .json({ success: false, message: "Erreur lors de la recherche" });
   }
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
-// Route pour rechercher un article en fonction de son tri ou de sa catégorie
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route POST pour rechercher les articles en fonction de leur paramètre de tri et/ou de leur catégorie
 router.post("/searchBySort", (req, res) => {
   try {
     const { category, sort } = req.body;
@@ -311,8 +314,10 @@ router.post("/searchBySort", (req, res) => {
       .json({ success: false, message: "Erreur lors de la recherche" });
   }
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
-// Route pour rechercher un article selon le titre ou l'auteur
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route pour rechercher les articles selon leur titre ou auteur
 router.post("/search", async (req, res) => {
   const { title, author, category } = req.body;
   try {
@@ -346,8 +351,10 @@ router.post("/search", async (req, res) => {
       .json({ success: false, message: "Erreur lors de la recherche" });
   }
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
-// Route pour uploader une photo sur Cloudinary
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route POST pour télécharger une photo sur Cloudinary
 router.post("/uploadPhoto", async (req, res) => {
   const photoPath = `./tmp/${uniqid()}.jpg`;
   const resultMove = await req.files.photoFromFront.mv(photoPath);
@@ -362,10 +369,10 @@ router.post("/uploadPhoto", async (req, res) => {
     res.json({ result: false, error: resultMove });
   }
 });
-
 //-----------------------------------------------------------------------------------------------------------------------------------------
 
-// Route pour modifier le prix actuel d'un article-----------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route pour modifier le prix actuel d'un article
 router.put("/updateCurrentPrice", (req, res) => {
   try {
     const id = req.body.id;
@@ -398,9 +405,10 @@ router.put("/updateCurrentPrice", (req, res) => {
     res.status(500).json({ message: "Erreur lors de la mise à jour du prix" });
   }
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------------------------------------
 // Route pour récupérer les articles d'un utilisateur
-
 router.get("/mes-publications/:userId", (req, res) => {
   // On récupère l'id de l'utilisateur dans l'url
   const userId = req.params.userId;
@@ -416,7 +424,10 @@ router.get("/mes-publications/:userId", (req, res) => {
       res.status(500).json({ success: false, message: "Erreur serveur" });
     });
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------------------------------------
+// Route GET pour récupérer les articles d'un vendeur avec un ID spécifique
 router.get("/findVendorArticles/:userId", (req, res) => {
   Article.find({ annonceur: new ObjectId(req.params.userId) })
     .populate("categorie etat auteur editeur annonceur acheteur")
@@ -427,8 +438,10 @@ router.get("/findVendorArticles/:userId", (req, res) => {
       res.json({ result: false, error: "Erreur serveur." });
     });
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
-//Route pour récupérer les articles en fonction de leur ID
+//-------------------------------------------------------------------------------------------------------------------------------
+//Route pour récupérer un article en fonction de son ID
 router.get("/findArticleById/:id", (req, res) => {
   const id = req.params.id;
   Article.findOne({ _id: new ObjectId(id) })
@@ -441,7 +454,9 @@ router.get("/findArticleById/:id", (req, res) => {
       res.json({ result: false, error: "Erreur serveur." });
     });
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------------------------------------
 //Route pour supprimer un article en fonction de son ID
 router.delete("/deleteArticle/:id", (req, res) => {
   const id = req.params.id;
@@ -453,5 +468,6 @@ router.delete("/deleteArticle/:id", (req, res) => {
       res.json({ result: false, error: "Erreur serveur." });
     });
 });
+//-------------------------------------------------------------------------------------------------------------------------------
 
 module.exports = router;
