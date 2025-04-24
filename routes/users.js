@@ -205,6 +205,10 @@ router.put("/updateInfo/:userId", async (req, res) => {
       hash = bcrypt.hashSync(password, 10);
     }
 
+    if (donneeBancaire.length !== 16) {
+      return res.json({ result: false, error: "Numéro de carte invalide" });
+    }
+
     // Mise à jour des informations
     const updatedUser = await User.updateOne(
       { _id: new ObjectId(userId) },
