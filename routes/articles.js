@@ -49,9 +49,7 @@ router.post("/publish", async (req, res) => {
     req.body.titre &&
     req.body.description &&
     req.body.prix &&
-    req.body.localisation.title &&
-    req.body.localisation.coordinates[0] &&
-    req.body.localisation.coordinates[1] &&
+    req.body.localisation &&
     req.body.photoUrl.length > 0 &&
     req.body.annonceur
   ) {
