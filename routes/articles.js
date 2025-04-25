@@ -445,7 +445,6 @@ router.get("/findArticleById/:id", (req, res) => {
   Article.findOne({ _id: new ObjectId(id) })
     .populate("categorie etat auteur editeur annonceur acheteur")
     .then((data) => {
-      console.log(data);
       res.json({ result: true, data });
     })
     .catch(() => {
